@@ -7,4 +7,7 @@ module fr.amu.iut.saesuper_bomberman {
 
     opens fr.amu.iut.saesuper_bomberman to javafx.fxml;
     exports fr.amu.iut.saesuper_bomberman;
+
+    exports fr.amu.iut.saesuper_bomberman.controllerfxml;
+    opens fr.amu.iut.saesuper_bomberman.controllerfxml to javafx.fxml;
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="fr.amu.iut.saesuper_bomberman.controllerfxml.MenuController"
+      alignment="CENTER"
+      spacing="20"
+      style="-fx-padding: 50;">
+
+    <Button text="Start" onAction="#onStartClicked" prefWidth="200" />
+</VBox>
