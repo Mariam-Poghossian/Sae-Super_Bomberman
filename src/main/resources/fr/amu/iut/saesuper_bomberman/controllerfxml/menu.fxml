@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="fr.amu.iut.saesuper_bomberman.controllerfxml.MenuController"
-      alignment="CENTER"
-      spacing="20"
-      style="-fx-padding: 50;">
+<AnchorPane fx:id="root"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="fr.amu.iut.saesuper_bomberman.controllerfxml.MenuController"
+            prefWidth="1032" prefHeight="780">
 
-    <Button text="Start" onAction="#onStartClicked" prefWidth="200" />
-</VBox>
+    <!-- 🌆 Arrière-plan -->
+    <ImageView fx:id="background"
+               fitWidth="1032"
+               fitHeight="780"
+               preserveRatio="false" />
+
+    <!-- 🧩 Menu flottant (barre du bas) -->
+    <fx:include source="../components/BottomOverlayMenu.fxml"/>
+
+</AnchorPane>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+
+<HBox fx:id="bottomMenu"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="fr.amu.iut.saesuper_bomberman.components.BottomOverlayMenuController"
+      style="-fx-background-color: rgba(0, 0, 0, 0.6);"
+      prefHeight="60"
+      prefWidth="860"
+      layoutY="590"
+      visible="false">
+
+    <!-- Exemple de boutons -->
+    <Button text="⟳"/>
+    <Button text="💾"/>
+    <Button text="📂"/>
+</HBox>

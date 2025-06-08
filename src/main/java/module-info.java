@@ -10,4 +10,8 @@ module fr.amu.iut.saesuper_bomberman {
 
     exports fr.amu.iut.saesuper_bomberman.controllerfxml;
     opens fr.amu.iut.saesuper_bomberman.controllerfxml to javafx.fxml;
+
+    // ✅ Ajout nécessaire pour éviter l'erreur d'accès
+    exports fr.amu.iut.saesuper_bomberman.components;
+    opens fr.amu.iut.saesuper_bomberman.components to javafx.fxml;
 }
