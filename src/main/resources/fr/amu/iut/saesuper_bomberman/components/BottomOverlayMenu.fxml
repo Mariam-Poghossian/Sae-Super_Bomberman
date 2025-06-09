@@ -17,37 +17,37 @@
 
     <!-- Aligné à gauche -->
     <left>
-        <HBox spacing="1" alignment="CENTER" prefHeight="70">
+        <HBox spacing="0" alignment="CENTER_LEFT" prefHeight="70">
             <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
-                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/restart.png"/></image></ImageView></graphic>
+                <graphic><ImageView fitHeight="45" fitWidth="45"><image><Image url="@../assets/icons/restart.png"/></image></ImageView></graphic>
             </Button>
             <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
-                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/play.png"/></image></ImageView></graphic>
+                <graphic><ImageView fitHeight="45" fitWidth="45"><image><Image url="@../assets/icons/play.png"/></image></ImageView></graphic>
             </Button>
             <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
-                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/save.png"/></image></ImageView></graphic>
+                <graphic><ImageView fitHeight="35" fitWidth="35"><image><Image url="@../assets/icons/save.png"/></image></ImageView></graphic>
             </Button>
             <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
-                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/folder.png"/></image></ImageView></graphic>
+                <graphic><ImageView fitHeight="50" fitWidth="50"><image><Image url="@../assets/icons/folder.png"/></image></ImageView></graphic>
             </Button>
             <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
-                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/ScreenRecording.png"/></image></ImageView></graphic>
+                <graphic><ImageView fitHeight="50" fitWidth="50"><image><Image url="@../assets/icons/ScreenRecording.png"/></image></ImageView></graphic>
             </Button>
             <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
-                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/CacheManager.png"/></image></ImageView></graphic>
+                <graphic><ImageView fitHeight="45" fitWidth="45"><image><Image url="@../assets/icons/CacheManager.png"/></image></ImageView></graphic>
             </Button>
             <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
-                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/ControlSetting.png"/></image></ImageView></graphic>
+                <graphic><ImageView fitHeight="50" fitWidth="50"><image><Image url="@../assets/icons/ControlSetting.png"/></image></ImageView></graphic>
             </Button>
             <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
-                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/Cheats.png"/></image></ImageView></graphic>
+                <graphic><ImageView fitHeight="35" fitWidth="35"><image><Image url="@../assets/icons/Cheats.png"/></image></ImageView></graphic>
             </Button>
         </HBox>
     </left>
 
     <!-- Aligné à droite -->
     <right>
-        <HBox spacing="10" alignment="CENTER" prefHeight="70">
+        <HBox spacing="1" alignment="CENTER" prefHeight="70">
             <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
                 <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/Mute.png"/></image></ImageView></graphic>
             </Button>
@@ -60,7 +60,7 @@
             </Button>
 
             <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
-                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/FullScreen.png"/></image></ImageView></graphic>
+                <graphic><ImageView fitHeight="40" fitWidth="50"><image><Image url="@../assets/icons/FullScreen.png"/></image></ImageView></graphic>
             </Button>
         </HBox>
     </right>
