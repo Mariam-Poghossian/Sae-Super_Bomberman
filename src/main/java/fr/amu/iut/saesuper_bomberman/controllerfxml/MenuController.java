@@ -1,6 +1,7 @@
 package fr.amu.iut.saesuper_bomberman.controllerfxml;
 
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -112,6 +113,17 @@ public class MenuController implements Initializable {
                     "/fr/amu/iut/saesuper_bomberman/components/BottomOverlayMenu.fxml"));
             bottomOverlay.setVisible(false);
             root.getChildren().add(bottomOverlay);
+
+            Platform.runLater(() -> {
+                if (root.getScene() != null) {
+                    root.getScene().getStylesheets().add(
+                            getClass().getResource("/fr/amu/iut/saesuper_bomberman/assets/styles/bottomMenu.css").toExternalForm()
+                    );
+                } else {
+                    System.err.println("⚠️ Impossible d’ajouter la feuille de style : scène null");
+                }
+            });
+
 
             // 🔽 Ajout pour l’ancrer en bas
             AnchorPane.setBottomAnchor(bottomOverlay, 0.0);
