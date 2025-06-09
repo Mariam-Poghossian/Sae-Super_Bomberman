@@ -59,7 +59,7 @@
                 <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/Settings.png"/></image></ImageView></graphic>
             </Button>
 
-            <Button styleClass="menu-button"  prefWidth="50" prefHeight="50">
+            <Button styleClass="menu-button" prefWidth="50" prefHeight="50">
                 <graphic><ImageView fitHeight="40" fitWidth="50"><image><Image url="@../assets/icons/FullScreen.png"/></image></ImageView></graphic>
             </Button>
         </HBox>
