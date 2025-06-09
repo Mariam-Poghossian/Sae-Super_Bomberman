@@ -2,13 +2,14 @@ package fr.amu.iut.saesuper_bomberman.components;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.Scene;
 
 public class BottomOverlayMenuController {
 
     @FXML
-    private HBox bottomMenu;
+    private BorderPane bottomMenu;
 
     @FXML
     public void initialize() {

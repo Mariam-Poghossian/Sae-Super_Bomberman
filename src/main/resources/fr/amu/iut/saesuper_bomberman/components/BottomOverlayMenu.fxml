@@ -1,19 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox fx:id="bottomMenu"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="fr.amu.iut.saesuper_bomberman.components.BottomOverlayMenuController"
-      style="-fx-background-color: rgba(0, 0, 0, 0.6);"
-      prefHeight="60"
-      prefWidth="860"
-      layoutY="590"
-      visible="false">
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="fr.amu.iut.saesuper_bomberman.components.BottomOverlayMenuController"
+            prefHeight="70" prefWidth="860"
+            style="-fx-background-color: black;"
+            layoutY="600"
+            fx:id="bottomMenu"
+            visible="false">
 
-    <!-- Exemple de boutons -->
-    <Button text="⟳"/>
-    <Button text="💾"/>
-    <Button text="📂"/>
-</HBox>
+    <!-- Aligné à gauche -->
+    <left>
+        <HBox spacing="1" alignment="CENTER" prefHeight="70">
+            <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
+                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/restart.png"/></image></ImageView></graphic>
+            </Button>
+            <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
+                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/play.png"/></image></ImageView></graphic>
+            </Button>
+            <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
+                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/save.png"/></image></ImageView></graphic>
+            </Button>
+            <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
+                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/folder.png"/></image></ImageView></graphic>
+            </Button>
+            <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
+                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/ScreenRecording.png"/></image></ImageView></graphic>
+            </Button>
+            <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
+                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/CacheManager.png"/></image></ImageView></graphic>
+            </Button>
+            <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
+                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/ControlSetting.png"/></image></ImageView></graphic>
+            </Button>
+            <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
+                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/Cheats.png"/></image></ImageView></graphic>
+            </Button>
+        </HBox>
+    </left>
+
+    <!-- Aligné à droite -->
+    <right>
+        <HBox spacing="10" alignment="CENTER" prefHeight="70">
+            <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
+                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/Mute.png"/></image></ImageView></graphic>
+            </Button>
+
+            <Slider min="0" max="100" value="50" prefWidth="100"
+                    style="-fx-control-inner-background: white;" />
+
+            <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
+                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/Settings.png"/></image></ImageView></graphic>
+            </Button>
+
+            <Button style="-fx-background-color: black;" prefWidth="50" prefHeight="50">
+                <graphic><ImageView fitHeight="40" fitWidth="40"><image><Image url="@../assets/icons/FullScreen.png"/></image></ImageView></graphic>
+            </Button>
+        </HBox>
+    </right>
+
+</BorderPane>

@@ -112,9 +112,15 @@ public class MenuController implements Initializable {
                     "/fr/amu/iut/saesuper_bomberman/components/BottomOverlayMenu.fxml"));
             bottomOverlay.setVisible(false);
             root.getChildren().add(bottomOverlay);
+
+            // 🔽 Ajout pour l’ancrer en bas
+            AnchorPane.setBottomAnchor(bottomOverlay, 0.0);
+            AnchorPane.setLeftAnchor(bottomOverlay, 0.0);
+            AnchorPane.setRightAnchor(bottomOverlay, 0.0);
         } catch (Exception e) {
             System.err.println("Erreur chargement menu flottant : " + e.getMessage());
         }
+
 
         root.setOnMouseEntered(e -> {
             if (bottomOverlay != null) bottomOverlay.setVisible(true);

@@ -1,0 +1,9 @@
+.button {
+    -fx-background-color: transparent;
+    -fx-padding: 8;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #FFA500; /* orange */
+}
