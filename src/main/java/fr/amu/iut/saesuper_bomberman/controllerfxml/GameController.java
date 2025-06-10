@@ -417,56 +417,6 @@ public class GameController implements Initializable {
                 .collect(Collectors.toList());
     }
 
-    private void endGameByTime() {
-        List<Player> alivePlayers = gameState.getPlayers().stream()
-                .filter(Player::isAlive)
-                .collect(Collectors.toList());
-
-        if (alivePlayers.isEmpty()) {
-            Player bestPlayer = gameState.getPlayers().stream()
-                    .max(Comparator.comparingInt(Player::getKillCount))
-                    .orElse(null);
-
-            if (bestPlayer != null && bestPlayer.getKillCount() > 0) {
-                gameStatus.setText("TIME UP! PLAYER " + bestPlayer.getId() + " WINS! SCORE: " + String.format("%02d", bestPlayer.getKillCount()));
-                gameStatus.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
-            } else {
-                gameStatus.setText("TIME UP! NO WINNER - NO SCORE");
-                gameStatus.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
-            }
-        } else {
-            Player winner = alivePlayers.stream()
-                    .max(Comparator.comparingInt(Player::getKillCount))
-                    .orElse(alivePlayers.get(0));
-
-            int maxKills = winner.getKillCount();
-            List<Player> winners = alivePlayers.stream()
-                    .filter(p -> p.getKillCount() == maxKills)
-                    .collect(Collectors.toList());
-
-            if (winners.size() > 1) {
-                String winnerIds = winners.stream()
-                        .map(p -> "P" + p.getId())
-                        .collect(Collectors.joining(" & "));
-
-                gameStatus.setText("TIME UP! TIE GAME - " + winnerIds + " SCORE: " + String.format("%02d", maxKills));
-                gameStatus.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
-            } else {
-                gameStatus.setText("TIME UP! PLAYER " + winner.getId() + " WINS! SCORE: " + String.format("%02d", maxKills));
-                gameStatus.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
-            }
-        }
-
-        if (gameLoop != null) {
-            new javafx.animation.Timeline(
-                    new javafx.animation.KeyFrame(
-                            javafx.util.Duration.seconds(5),
-                            e -> gameLoop.stop()
-                    )
-            ).play();
-        }
-    }
-
 
     @FXML
     private void restartGame() {
