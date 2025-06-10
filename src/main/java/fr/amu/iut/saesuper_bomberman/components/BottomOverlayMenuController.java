@@ -81,8 +81,6 @@ public class BottomOverlayMenuController {
         pauseButton.setOnAction(e -> {
             ImageView iv = (ImageView) pauseButton.getGraphic();
             Stage stage = (Stage) pauseButton.getScene().getWindow();
-
-            // On suppose que le MenuController est déjà attaché à la scène
             MenuController menuController = (MenuController) stage.getUserData();
 
             if (menuController == null) {
@@ -91,14 +89,16 @@ public class BottomOverlayMenuController {
             }
 
             if (!isPaused) {
+                // Quand on met en pause, on affiche le bouton play
                 iv.setImage(new Image(getClass().getResource(
-                        "/fr/amu/iut/saesuper_bomberman/assets/icons/Pause.png").toExternalForm()));
+                        "/fr/amu/iut/saesuper_bomberman/assets/icons/play.png").toExternalForm()));
                 isPaused = true;
                 menuController.pauseAllAnimations();
                 System.out.println("⏸️ Jeu en pause");
             } else {
+                // Quand on reprend, on affiche le bouton pause
                 iv.setImage(new Image(getClass().getResource(
-                        "/fr/amu/iut/saesuper_bomberman/assets/icons/play.png").toExternalForm()));
+                        "/fr/amu/iut/saesuper_bomberman/assets/icons/pause.png").toExternalForm()));
                 isPaused = false;
                 menuController.resumeAllAnimations();
                 System.out.println("▶️ Jeu relancé");

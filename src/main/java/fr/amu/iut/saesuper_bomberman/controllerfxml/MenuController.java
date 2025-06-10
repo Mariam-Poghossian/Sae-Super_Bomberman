@@ -27,7 +27,7 @@ public class MenuController implements Initializable {
     private ImageView dirigeable;
     private ImageView petitDirigeable;
 
-    private Node bottomOverlay; // menu flottant
+    private Node bottomOverlay;
 
     private TranslateTransition mt;
     private TranslateTransition dh;
@@ -36,9 +36,10 @@ public class MenuController implements Initializable {
     private ParallelTransition logoAnimation;
     private ImageView logo;
 
+    private boolean logoAnimationDone = false;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
         // === FOND ===
         Image bg = new Image(getClass().getResource(
                 "/fr/amu/iut/saesuper_bomberman/assets/images/background.png"
@@ -102,21 +103,24 @@ public class MenuController implements Initializable {
 
         logoPause = new PauseTransition(Duration.seconds(3.5));
         logoPause.setOnFinished(e -> {
-            logo.setVisible(true);
-            logo.setOpacity(0);
-            logo.setScaleX(0.5);
-            logo.setScaleY(0.5);
-            FadeTransition fade = new FadeTransition(Duration.seconds(1.5), logo);
-            fade.setFromValue(0); fade.setToValue(1);
-            ScaleTransition scale = new ScaleTransition(Duration.seconds(1.5), logo);
-            scale.setFromX(0.5); scale.setToX(1);
-            scale.setFromY(0.5); scale.setToY(1);
-            logoAnimation = new ParallelTransition(fade, scale);
-            logoAnimation.play();
+            if (!logoAnimationDone) {
+                logo.setVisible(true);
+                logo.setOpacity(0);
+                logo.setScaleX(0.5);
+                logo.setScaleY(0.5);
+                FadeTransition fade = new FadeTransition(Duration.seconds(1.5), logo);
+                fade.setFromValue(0); fade.setToValue(1);
+                ScaleTransition scale = new ScaleTransition(Duration.seconds(1.5), logo);
+                scale.setFromX(0.5); scale.setToX(1);
+                scale.setFromY(0.5); scale.setToY(1);
+                logoAnimation = new ParallelTransition(fade, scale);
+                logoAnimation.setOnFinished(event -> logoAnimationDone = true);
+                logoAnimation.play();
+            }
         });
         logoPause.play();
 
-        // === ⬇️ MENU FLOTTANT — visible si souris dans la fenêtre ===
+        // === MENU FLOTTANT ===
         try {
             bottomOverlay = FXMLLoader.load(getClass().getResource(
                     "/fr/amu/iut/saesuper_bomberman/components/BottomOverlayMenu.fxml"));
@@ -129,7 +133,7 @@ public class MenuController implements Initializable {
                             getClass().getResource("/fr/amu/iut/saesuper_bomberman/assets/styles/bottomMenu.css").toExternalForm()
                     );
                 } else {
-                    System.err.println("⚠️ Impossible d’ajouter la feuille de style : scène null");
+                    System.err.println("⚠️ Impossible d'ajouter la feuille de style : scène null");
                 }
             });
 
@@ -151,22 +155,25 @@ public class MenuController implements Initializable {
             Stage stage = (Stage) root.getScene().getWindow();
             stage.setUserData(this);
         });
-
     }
 
     public void pauseAllAnimations() {
         mt.pause();
         dh.pause();
         df.pause();
-        logoPause.pause();
-        if (logoAnimation != null) logoAnimation.pause();
+        if (!logoAnimationDone) {
+            logoPause.pause();
+            if (logoAnimation != null) logoAnimation.pause();
+        }
     }
 
     public void resumeAllAnimations() {
         mt.play();
         dh.play();
         df.play();
-        logoPause.play();
-        if (logoAnimation != null) logoAnimation.play();
+        if (!logoAnimationDone) {
+            logoPause.play();
+            if (logoAnimation != null) logoAnimation.play();
+        }
     }
 }
