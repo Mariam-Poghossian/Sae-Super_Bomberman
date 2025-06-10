@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -28,6 +29,13 @@ public class MenuController implements Initializable {
 
     private Node bottomOverlay; // menu flottant
 
+    private TranslateTransition mt;
+    private TranslateTransition dh;
+    private TranslateTransition df;
+    private PauseTransition logoPause;
+    private ParallelTransition logoAnimation;
+    private ImageView logo;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -36,8 +44,8 @@ public class MenuController implements Initializable {
                 "/fr/amu/iut/saesuper_bomberman/assets/images/background.png"
         ).toExternalForm());
         background.setImage(bg);
-        background.setFitWidth(bg.getWidth());
-        background.setFitHeight(bg.getHeight());
+        background.fitWidthProperty().bind(root.widthProperty());
+        background.fitHeightProperty().bind(root.heightProperty());
 
         // === OBJETS VOLANTS ===
         montgolfiere = new ImageView(new Image(getClass().getResource(
@@ -64,26 +72,26 @@ public class MenuController implements Initializable {
         root.getChildren().addAll(montgolfiere, dirigeable, petitDirigeable);
 
         // === ANIMATIONS ===
-        TranslateTransition mt = new TranslateTransition(Duration.seconds(35), montgolfiere);
+        mt = new TranslateTransition(Duration.seconds(35), montgolfiere);
         mt.setFromX(0); mt.setToX(1200);
         mt.setCycleCount(Animation.INDEFINITE);
         mt.setInterpolator(Interpolator.LINEAR);
         mt.play();
 
-        TranslateTransition dh = new TranslateTransition(Duration.seconds(28), dirigeable);
+        dh = new TranslateTransition(Duration.seconds(28), dirigeable);
         dh.setFromX(0); dh.setToX(1200);
         dh.setCycleCount(Animation.INDEFINITE);
         dh.setInterpolator(Interpolator.LINEAR);
         dh.play();
 
-        TranslateTransition df = new TranslateTransition(Duration.seconds(25), petitDirigeable);
+        df = new TranslateTransition(Duration.seconds(25), petitDirigeable);
         df.setFromX(0); df.setToX(-1200);
         df.setCycleCount(Animation.INDEFINITE);
         df.setInterpolator(Interpolator.LINEAR);
         df.play();
 
         // === LOGO ===
-        ImageView logo = new ImageView(new Image(getClass().getResource(
+        logo = new ImageView(new Image(getClass().getResource(
                 "/fr/amu/iut/saesuper_bomberman/assets/images/logo.png").toExternalForm()));
         logo.setFitWidth(750);
         logo.setPreserveRatio(true);
@@ -92,8 +100,8 @@ public class MenuController implements Initializable {
         logo.setVisible(false);
         root.getChildren().add(logo);
 
-        PauseTransition pause = new PauseTransition(Duration.seconds(3.5));
-        pause.setOnFinished(e -> {
+        logoPause = new PauseTransition(Duration.seconds(3.5));
+        logoPause.setOnFinished(e -> {
             logo.setVisible(true);
             logo.setOpacity(0);
             logo.setScaleX(0.5);
@@ -103,9 +111,10 @@ public class MenuController implements Initializable {
             ScaleTransition scale = new ScaleTransition(Duration.seconds(1.5), logo);
             scale.setFromX(0.5); scale.setToX(1);
             scale.setFromY(0.5); scale.setToY(1);
-            new ParallelTransition(fade, scale).play();
+            logoAnimation = new ParallelTransition(fade, scale);
+            logoAnimation.play();
         });
-        pause.play();
+        logoPause.play();
 
         // === ⬇️ MENU FLOTTANT — visible si souris dans la fenêtre ===
         try {
@@ -124,8 +133,6 @@ public class MenuController implements Initializable {
                 }
             });
 
-
-            // 🔽 Ajout pour l’ancrer en bas
             AnchorPane.setBottomAnchor(bottomOverlay, 0.0);
             AnchorPane.setLeftAnchor(bottomOverlay, 0.0);
             AnchorPane.setRightAnchor(bottomOverlay, 0.0);
@@ -133,13 +140,33 @@ public class MenuController implements Initializable {
             System.err.println("Erreur chargement menu flottant : " + e.getMessage());
         }
 
-
-        root.setOnMouseEntered(e -> {
-            if (bottomOverlay != null) bottomOverlay.setVisible(true);
+        root.setOnMouseMoved(e -> {
+            if (bottomOverlay != null) {
+                double y = e.getSceneY();
+                double sceneHeight = root.getScene().getHeight();
+            }
         });
 
-        root.setOnMouseExited(e -> {
-            if (bottomOverlay != null) bottomOverlay.setVisible(false);
+        Platform.runLater(() -> {
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.setUserData(this);
         });
+
+    }
+
+    public void pauseAllAnimations() {
+        mt.pause();
+        dh.pause();
+        df.pause();
+        logoPause.pause();
+        if (logoAnimation != null) logoAnimation.pause();
+    }
+
+    public void resumeAllAnimations() {
+        mt.play();
+        dh.play();
+        df.play();
+        logoPause.play();
+        if (logoAnimation != null) logoAnimation.play();
     }
 }
