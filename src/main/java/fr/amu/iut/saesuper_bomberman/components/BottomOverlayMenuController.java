@@ -28,6 +28,9 @@ public class BottomOverlayMenuController {
     @FXML
     private Button pauseButton;
 
+    @FXML
+    private Button restartButton; // Ajoutez cette ligne en haut
+
     private double previousVolume = 50; // Volume par défaut
     private boolean isFullscreen = false;
     private boolean isPaused = false;
@@ -104,5 +107,27 @@ public class BottomOverlayMenuController {
                 System.out.println("▶️ Jeu relancé");
             }
         });
+
+        restartButton.setOnAction(e -> {
+            Stage stage = (Stage) restartButton.getScene().getWindow();
+            MenuController menuController = (MenuController) stage.getUserData();
+
+            if (menuController == null) {
+                System.err.println("❌ MenuController non trouvé dans le stage !");
+                return;
+            }
+
+            menuController.restartAllAnimations();
+            System.out.println("🔄 Animations redémarrées");
+
+            // Réinitialisation du bouton pause si nécessaire
+            if (isPaused) {
+                ImageView iv = (ImageView) pauseButton.getGraphic();
+                iv.setImage(new Image(getClass().getResource(
+                        "/fr/amu/iut/saesuper_bomberman/assets/icons/pause.png").toExternalForm()));
+                isPaused = false;
+            }
+        });
     }
 }
+

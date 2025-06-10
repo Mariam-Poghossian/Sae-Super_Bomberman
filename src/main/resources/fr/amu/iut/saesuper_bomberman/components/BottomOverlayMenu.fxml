@@ -18,7 +18,7 @@
     <!-- Aligné à gauche -->
     <left>
         <HBox spacing="10" alignment="CENTER_LEFT" prefHeight="70">
-            <Button styleClass="menu-button" prefWidth="50" prefHeight="50">
+            <Button fx:id="restartButton" styleClass="menu-button" prefWidth="50" prefHeight="50">
                 <graphic><ImageView fitHeight="45" fitWidth="45"><image><Image url="@../assets/icons/restart.png"/></image></ImageView></graphic>
             </Button>
             <Button fx:id="pauseButton" styleClass="menu-button" prefWidth="50" prefHeight="50">

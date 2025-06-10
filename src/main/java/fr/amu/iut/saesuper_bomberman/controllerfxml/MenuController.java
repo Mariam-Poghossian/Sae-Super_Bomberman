@@ -176,4 +176,32 @@ public class MenuController implements Initializable {
             if (logoAnimation != null) logoAnimation.play();
         }
     }
+
+    public void restartAllAnimations() {
+        // Réinitialisation des positions
+        montgolfiere.setLayoutX(-180);
+        dirigeable.setLayoutX(-250);
+        petitDirigeable.setLayoutX(950);
+
+        // Arrêt des animations en cours
+        mt.stop();
+        dh.stop();
+        df.stop();
+
+        // Réinitialisation du logo
+        logo.setVisible(false);
+        logoAnimationDone = false;
+        if (logoAnimation != null) {
+            logoAnimation.stop();
+        }
+        if (logoPause != null) {
+            logoPause.stop();
+        }
+
+        // Redémarrage des animations
+        mt.playFromStart();
+        dh.playFromStart();
+        df.playFromStart();
+        logoPause.playFromStart();
+    }
 }
