@@ -11,6 +11,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -19,15 +21,14 @@ public class MenuController implements Initializable {
 
     @FXML
     private AnchorPane root;
-
     @FXML
     private ImageView background;
 
     private ImageView montgolfiere;
     private ImageView dirigeable;
     private ImageView petitDirigeable;
-
     private Node bottomOverlay;
+    private MediaPlayer mediaPlayer;
 
     private TranslateTransition mt;
     private TranslateTransition dh;
@@ -40,15 +41,48 @@ public class MenuController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // === FOND ===
+        initializeAudio();
+        initializeBackground();
+        initializeFlyingObjects();
+        initializeAnimations();
+        initializeLogo();
+        initializeBottomMenu();
+    }
+
+    private void initializeAudio() {
+        try {
+            String musicFile = "/fr/amu/iut/saesuper_bomberman/assets/audio/music.mp3";
+            URL musicUrl = getClass().getResource(musicFile);
+            if (musicUrl == null) {
+                System.err.println("❌ Fichier audio non trouvé : " + musicFile);
+                return;
+            }
+            System.out.println("✅ Fichier audio trouvé : " + musicUrl);
+
+            Media media = new Media(musicUrl.toExternalForm());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            mediaPlayer.setVolume(0.5);
+            System.out.println("🔊 Volume initial : " + mediaPlayer.getVolume());
+
+            mediaPlayer.play();
+            System.out.println("▶️ Lecture audio démarrée");
+        } catch (Exception e) {
+            System.err.println("❌ Erreur chargement audio : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void initializeBackground() {
         Image bg = new Image(getClass().getResource(
                 "/fr/amu/iut/saesuper_bomberman/assets/images/background.png"
         ).toExternalForm());
         background.setImage(bg);
         background.fitWidthProperty().bind(root.widthProperty());
         background.fitHeightProperty().bind(root.heightProperty());
+    }
 
-        // === OBJETS VOLANTS ===
+    private void initializeFlyingObjects() {
         montgolfiere = new ImageView(new Image(getClass().getResource(
                 "/fr/amu/iut/saesuper_bomberman/assets/images/montgolfiere.png").toExternalForm()));
         montgolfiere.setFitWidth(200);
@@ -71,27 +105,32 @@ public class MenuController implements Initializable {
         petitDirigeable.setLayoutY(260);
 
         root.getChildren().addAll(montgolfiere, dirigeable, petitDirigeable);
+    }
 
-        // === ANIMATIONS ===
+    private void initializeAnimations() {
         mt = new TranslateTransition(Duration.seconds(35), montgolfiere);
-        mt.setFromX(0); mt.setToX(1200);
+        mt.setFromX(0);
+        mt.setToX(1200);
         mt.setCycleCount(Animation.INDEFINITE);
         mt.setInterpolator(Interpolator.LINEAR);
         mt.play();
 
         dh = new TranslateTransition(Duration.seconds(28), dirigeable);
-        dh.setFromX(0); dh.setToX(1200);
+        dh.setFromX(0);
+        dh.setToX(1200);
         dh.setCycleCount(Animation.INDEFINITE);
         dh.setInterpolator(Interpolator.LINEAR);
         dh.play();
 
         df = new TranslateTransition(Duration.seconds(25), petitDirigeable);
-        df.setFromX(0); df.setToX(-1200);
+        df.setFromX(0);
+        df.setToX(-1200);
         df.setCycleCount(Animation.INDEFINITE);
         df.setInterpolator(Interpolator.LINEAR);
         df.play();
+    }
 
-        // === LOGO ===
+    private void initializeLogo() {
         logo = new ImageView(new Image(getClass().getResource(
                 "/fr/amu/iut/saesuper_bomberman/assets/images/logo.png").toExternalForm()));
         logo.setFitWidth(750);
@@ -108,19 +147,26 @@ public class MenuController implements Initializable {
                 logo.setOpacity(0);
                 logo.setScaleX(0.5);
                 logo.setScaleY(0.5);
+
                 FadeTransition fade = new FadeTransition(Duration.seconds(1.5), logo);
-                fade.setFromValue(0); fade.setToValue(1);
+                fade.setFromValue(0);
+                fade.setToValue(1);
+
                 ScaleTransition scale = new ScaleTransition(Duration.seconds(1.5), logo);
-                scale.setFromX(0.5); scale.setToX(1);
-                scale.setFromY(0.5); scale.setToY(1);
+                scale.setFromX(0.5);
+                scale.setToX(1);
+                scale.setFromY(0.5);
+                scale.setToY(1);
+
                 logoAnimation = new ParallelTransition(fade, scale);
                 logoAnimation.setOnFinished(event -> logoAnimationDone = true);
                 logoAnimation.play();
             }
         });
         logoPause.play();
+    }
 
-        // === MENU FLOTTANT ===
+    private void initializeBottomMenu() {
         try {
             bottomOverlay = FXMLLoader.load(getClass().getResource(
                     "/fr/amu/iut/saesuper_bomberman/components/BottomOverlayMenu.fxml"));
@@ -128,12 +174,12 @@ public class MenuController implements Initializable {
             root.getChildren().add(bottomOverlay);
 
             Platform.runLater(() -> {
+                Stage stage = (Stage) root.getScene().getWindow();
+                stage.setUserData(this);
+
                 if (root.getScene() != null) {
-                    root.getScene().getStylesheets().add(
-                            getClass().getResource("/fr/amu/iut/saesuper_bomberman/assets/styles/bottomMenu.css").toExternalForm()
-                    );
-                } else {
-                    System.err.println("⚠️ Impossible d'ajouter la feuille de style : scène null");
+                    root.getScene().getStylesheets().add(getClass().getResource(
+                            "/fr/amu/iut/saesuper_bomberman/assets/styles/bottomMenu.css").toExternalForm());
                 }
             });
 
@@ -141,20 +187,28 @@ public class MenuController implements Initializable {
             AnchorPane.setLeftAnchor(bottomOverlay, 0.0);
             AnchorPane.setRightAnchor(bottomOverlay, 0.0);
         } catch (Exception e) {
-            System.err.println("Erreur chargement menu flottant : " + e.getMessage());
+            System.err.println("❌ Erreur chargement menu flottant : " + e.getMessage());
         }
+    }
 
-        root.setOnMouseMoved(e -> {
-            if (bottomOverlay != null) {
-                double y = e.getSceneY();
-                double sceneHeight = root.getScene().getHeight();
+    public void setVolume(double volume) {
+        if (mediaPlayer != null) {
+            double normalizedVolume = volume / 100.0;
+            mediaPlayer.setVolume(normalizedVolume);
+            System.out.println("🔊 Volume changé : " + normalizedVolume);
+        } else {
+            System.err.println("❌ MediaPlayer est null");
+        }
+    }
+
+    public void muteAudio(boolean mute) {
+        if (mediaPlayer != null) {
+            if (mute) {
+                mediaPlayer.setVolume(0);
+            } else {
+                mediaPlayer.setVolume(0.5);
             }
-        });
-
-        Platform.runLater(() -> {
-            Stage stage = (Stage) root.getScene().getWindow();
-            stage.setUserData(this);
-        });
+        }
     }
 
     public void pauseAllAnimations() {
@@ -164,6 +218,9 @@ public class MenuController implements Initializable {
         if (!logoAnimationDone) {
             logoPause.pause();
             if (logoAnimation != null) logoAnimation.pause();
+        }
+        if (mediaPlayer != null) {
+            mediaPlayer.pause();
         }
     }
 
@@ -175,20 +232,21 @@ public class MenuController implements Initializable {
             logoPause.play();
             if (logoAnimation != null) logoAnimation.play();
         }
+        if (mediaPlayer != null) {
+            mediaPlayer.play();
+        }
     }
 
     public void restartAllAnimations() {
-        // Réinitialisation des positions
+        // Réinitialisation des animations
         montgolfiere.setLayoutX(-180);
         dirigeable.setLayoutX(-250);
         petitDirigeable.setLayoutX(950);
 
-        // Arrêt des animations en cours
         mt.stop();
         dh.stop();
         df.stop();
 
-        // Réinitialisation du logo
         logo.setVisible(false);
         logoAnimationDone = false;
         if (logoAnimation != null) {
@@ -196,6 +254,12 @@ public class MenuController implements Initializable {
         }
         if (logoPause != null) {
             logoPause.stop();
+        }
+
+        // Redémarrage de l'audio depuis le début
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.play();
         }
 
         // Redémarrage des animations

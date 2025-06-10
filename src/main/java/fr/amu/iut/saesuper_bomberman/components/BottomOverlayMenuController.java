@@ -15,52 +15,49 @@ public class BottomOverlayMenuController {
 
     @FXML
     private BorderPane bottomMenu;
-
     @FXML
     private Button muteButton;
-
     @FXML
     private Slider volumeSlider;
-
     @FXML
     private Button fullscreenButton;
-
     @FXML
     private Button pauseButton;
-
     @FXML
-    private Button restartButton; // Ajoutez cette ligne en haut
+    private Button restartButton;
 
-    private double previousVolume = 50; // Volume par défaut
+    private double previousVolume = 50;
     private boolean isFullscreen = false;
     private boolean isPaused = false;
 
     @FXML
     public void initialize() {
-        bottomMenu.setVisible(false); // caché au départ
+        initializeBottomMenu();
+        initializeVolumeControls();
+        initializeFullscreenButton();
+        initializePauseButton();
+        initializeRestartButton();
+    }
 
+    private void initializeBottomMenu() {
+        bottomMenu.setVisible(false);
         Platform.runLater(() -> {
             Scene scene = bottomMenu.getScene();
             if (scene != null) {
                 scene.setOnMouseEntered(e -> bottomMenu.setVisible(true));
                 scene.setOnMouseExited(e -> bottomMenu.setVisible(false));
-            } else {
-                System.err.println("❌ Scene is null: le composant n’est pas bien attaché !");
             }
         });
+    }
 
-        // 🔊 Mute / unmute
-        muteButton.setOnAction(e -> {
-            if (volumeSlider.getValue() > 0) {
-                previousVolume = volumeSlider.getValue();
-                volumeSlider.setValue(0);
-            } else {
-                volumeSlider.setValue(previousVolume);
-            }
-        });
-
-        // 🔁 Changement d’icône selon le volume
+    private void initializeVolumeControls() {
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            Stage stage = (Stage) volumeSlider.getScene().getWindow();
+            MenuController menuController = (MenuController) stage.getUserData();
+            if (menuController != null) {
+                menuController.setVolume(newVal.doubleValue());
+            }
+
             ImageView iv = (ImageView) muteButton.getGraphic();
             if (newVal.doubleValue() == 0) {
                 iv.setImage(new Image(getClass().getResource(
@@ -71,7 +68,26 @@ public class BottomOverlayMenuController {
             }
         });
 
-        // 🖥️ Bouton plein écran
+        muteButton.setOnAction(e -> {
+            Stage stage = (Stage) muteButton.getScene().getWindow();
+            MenuController menuController = (MenuController) stage.getUserData();
+
+            if (volumeSlider.getValue() > 0) {
+                previousVolume = volumeSlider.getValue();
+                volumeSlider.setValue(0);
+                if (menuController != null) {
+                    menuController.muteAudio(true);
+                }
+            } else {
+                volumeSlider.setValue(previousVolume);
+                if (menuController != null) {
+                    menuController.muteAudio(false);
+                }
+            }
+        });
+    }
+
+    private void initializeFullscreenButton() {
         fullscreenButton.setOnAction(e -> {
             Stage stage = (Stage) fullscreenButton.getScene().getWindow();
             if (stage != null) {
@@ -79,8 +95,9 @@ public class BottomOverlayMenuController {
                 stage.setFullScreen(isFullscreen);
             }
         });
+    }
 
-        // ⏸️ Bouton pause / reprise
+    private void initializePauseButton() {
         pauseButton.setOnAction(e -> {
             ImageView iv = (ImageView) pauseButton.getGraphic();
             Stage stage = (Stage) pauseButton.getScene().getWindow();
@@ -92,22 +109,20 @@ public class BottomOverlayMenuController {
             }
 
             if (!isPaused) {
-                // Quand on met en pause, on affiche le bouton play
                 iv.setImage(new Image(getClass().getResource(
                         "/fr/amu/iut/saesuper_bomberman/assets/icons/play.png").toExternalForm()));
                 isPaused = true;
                 menuController.pauseAllAnimations();
-                System.out.println("⏸️ Jeu en pause");
             } else {
-                // Quand on reprend, on affiche le bouton pause
                 iv.setImage(new Image(getClass().getResource(
                         "/fr/amu/iut/saesuper_bomberman/assets/icons/pause.png").toExternalForm()));
                 isPaused = false;
                 menuController.resumeAllAnimations();
-                System.out.println("▶️ Jeu relancé");
             }
         });
+    }
 
+    private void initializeRestartButton() {
         restartButton.setOnAction(e -> {
             Stage stage = (Stage) restartButton.getScene().getWindow();
             MenuController menuController = (MenuController) stage.getUserData();
@@ -118,9 +133,7 @@ public class BottomOverlayMenuController {
             }
 
             menuController.restartAllAnimations();
-            System.out.println("🔄 Animations redémarrées");
 
-            // Réinitialisation du bouton pause si nécessaire
             if (isPaused) {
                 ImageView iv = (ImageView) pauseButton.getGraphic();
                 iv.setImage(new Image(getClass().getResource(
@@ -130,4 +143,3 @@ public class BottomOverlayMenuController {
         });
     }
 }
-

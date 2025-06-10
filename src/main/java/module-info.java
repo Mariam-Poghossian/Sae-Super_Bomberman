@@ -5,6 +5,8 @@ module fr.amu.iut.saesuper_bomberman {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
 
+    requires javafx.media;
+
     opens fr.amu.iut.saesuper_bomberman to javafx.fxml;
     exports fr.amu.iut.saesuper_bomberman;
 
