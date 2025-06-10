@@ -13,11 +13,7 @@ import javafx.scene.input.KeyCode;
 import fr.amu.iut.saesuper_bomberman.model.*;
 
 import java.net.URL;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GameController implements Initializable {
@@ -148,24 +144,31 @@ public class GameController implements Initializable {
 
     private void update(long currentTime) {
         if (gameState.isTimeUp() && !gameEndedByTime) {
+            // Au lieu de terminer la partie, activer le Death Match
             gameEndedByTime = true;
-            gameState.endGame();
-            endGameByTime();
-            return;
+            gameState.startDeathMatch();
+            gameStatus.setText("DEATH MATCH ACTIVÉ! SURVIVEZ!");
+            gameStatus.setStyle("-fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
+            timerLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold; -fx-font-size: 18px; -fx-font-family: 'Courier New';");
         }
 
-        if (!gameEndedByTime) {
-            for (int i = 0; i < gameState.getPlayers().size(); i++) {
-                Player player = gameState.getPlayers().get(i);
-                if (player.isAlive()) {
-                    updatePlayerMovement(player, currentTime, i);
-                }
+        // Mettre à jour le Death Match si actif
+        if (gameState.isDeathMatchActive()) {
+            gameState.updateDeathMatch();
+        }
+
+        // La partie continue même après la fin du temps normal
+        for (int i = 0; i < gameState.getPlayers().size(); i++) {
+            Player player = gameState.getPlayers().get(i);
+            if (player.isAlive()) {
+                updatePlayerMovement(player, currentTime, i);
             }
-
-            gameState.updateBombs();
-            gameState.checkExplosionCollisions();
-            checkGameState();
         }
+
+        gameState.updateBombs();
+        gameState.checkExplosionCollisions();
+        gameState.checkPowerUpCollisions();
+        checkGameState();
     }
 
     private void updatePlayerMovement(Player player, long currentTime, int playerIndex) {
@@ -341,19 +344,40 @@ public class GameController implements Initializable {
                     .orElse(null);
 
             if (winner != null) {
+                // Un seul survivant
                 gameStatus.setText("PLAYER " + winner.getId() + " WINS! SCORE: " + String.format("%02d", winner.getKillCount()));
                 gameStatus.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
             } else {
-                Player lastWinner = gameState.getPlayers().stream()
-                        .max(Comparator.comparingInt(Player::getKillCount))
-                        .orElse(null);
+                // Tous les joueurs sont morts, vérifier s'il y a eu une mort simultanée
+                List<Player> lastDeadPlayers = findLastDeadPlayers();
 
-                if (lastWinner != null && lastWinner.getKillCount() > 0) {
-                    gameStatus.setText("PLAYER " + lastWinner.getId() + " WINS! SCORE: " + String.format("%02d", lastWinner.getKillCount()));
+                if (lastDeadPlayers.size() > 1) {
+                    // Plusieurs joueurs sont morts en même temps - égalité
+                    String tiedPlayers = lastDeadPlayers.stream()
+                            .map(p -> "P" + p.getId())
+                            .collect(Collectors.joining(" VS "));
+
+                    int tieScore = lastDeadPlayers.get(0).getKillCount();
+                    gameStatus.setText("ÉGALITÉ! " + tiedPlayers + " - SCORE: " + String.format("%02d", tieScore));
+                    gameStatus.setStyle("-fx-text-fill: yellow; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px; -fx-background-color: #444444; -fx-padding: 3;");
+                } else if (lastDeadPlayers.size() == 1) {
+                    // Le dernier mort gagne
+                    Player lastDead = lastDeadPlayers.get(0);
+                    gameStatus.setText("PLAYER " + lastDead.getId() + " WINS! SCORE: " + String.format("%02d", lastDead.getKillCount()));
                     gameStatus.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
                 } else {
-                    gameStatus.setText("DRAW GAME - NO SURVIVORS");
-                    gameStatus.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
+                    // Si aucun joueur mort récemment (cas improbable), utiliser la méthode existante
+                    Player lastWinner = gameState.getPlayers().stream()
+                            .max(Comparator.comparingInt(Player::getKillCount))
+                            .orElse(null);
+
+                    if (lastWinner != null && lastWinner.getKillCount() > 0) {
+                        gameStatus.setText("PLAYER " + lastWinner.getId() + " WINS! SCORE: " + String.format("%02d", lastWinner.getKillCount()));
+                        gameStatus.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
+                    } else {
+                        gameStatus.setText("DRAW GAME - NO SURVIVORS");
+                        gameStatus.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
+                    }
                 }
             }
 
@@ -369,6 +393,28 @@ public class GameController implements Initializable {
             gameStatus.setText("BATTLE IN PROGRESS - " + alivePlayers + " PLAYERS ALIVE");
             gameStatus.setStyle("-fx-text-fill: white; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
         }
+    }
+
+    private List<Player> findLastDeadPlayers() {
+        // Ignorer les joueurs qui sont toujours en vie
+        List<Player> deadPlayers = gameState.getPlayers().stream()
+                .filter(p -> !p.isAlive() && p.getDeathTime() > 0)
+                .collect(Collectors.toList());
+
+        if (deadPlayers.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Trouver le temps de mort le plus récent
+        long lastDeathTime = deadPlayers.stream()
+                .mapToLong(Player::getDeathTime)
+                .max()
+                .orElse(0);
+
+        // Trouver tous les joueurs morts à ce moment (ou dans une fenêtre de 100ms)
+        return deadPlayers.stream()
+                .filter(p -> Math.abs(p.getDeathTime() - lastDeathTime) < 100) // Fenêtre de 100ms pour considérer comme simultané
+                .collect(Collectors.toList());
     }
 
     private void endGameByTime() {

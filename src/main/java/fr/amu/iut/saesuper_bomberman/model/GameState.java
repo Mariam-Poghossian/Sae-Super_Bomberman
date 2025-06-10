@@ -14,9 +14,15 @@ public class GameState {
     private List<Bomb> bombs;
     private List<Explosion> explosions;
     private Set<String> playerExplosionHits;
+    private List<PowerUp> powerUps;
     private long gameStartTime;
     private static final long GAME_DURATION = 180000;
     private boolean gameEnded = false;
+    private boolean deathMatchActive = false;
+    private int deathMatchRing = 0;
+    private long lastDeathMatchUpdate = 0;
+    private static final long DEATH_MATCH_INTERVAL = 4000; // 3 secondes entre chaque avancée de murs
+    private static final int DEATH_MATCH_MAX_RINGS = (GRID_WIDTH < GRID_HEIGHT ? GRID_WIDTH : GRID_HEIGHT) / 2;
 
     // Images pour le rendu
     private Image grassImage;
@@ -28,6 +34,9 @@ public class GameState {
     private Image player2Image;
     private Image player3Image;
     private Image player4Image;
+    private Image extraBombImage;
+    private Image explosionExpanderImage;
+    private Image maximumExplosionImage;
 
     public GameState() {
         loadImages();
@@ -35,6 +44,7 @@ public class GameState {
         initializePlayers();
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
+        powerUps = new ArrayList<>();
         playerExplosionHits = new HashSet<>();
         gameStartTime = System.currentTimeMillis();
     }
@@ -57,6 +67,11 @@ public class GameState {
             player2Image = new Image(getClass().getResourceAsStream(basePath + "player2.png"));
             player3Image = new Image(getClass().getResourceAsStream(basePath + "player3.png"));
             player4Image = new Image(getClass().getResourceAsStream(basePath + "player4.png"));
+
+            // Charger les images des power-ups
+            extraBombImage = new Image(getClass().getResourceAsStream(basePath + "powerup_bomb.png"));
+            explosionExpanderImage = new Image(getClass().getResourceAsStream(basePath + "powerup_flame.png"));
+            maximumExplosionImage = new Image(getClass().getResourceAsStream(basePath + "powerup_maxflame.png"));
 
         } catch (Exception e) {
             System.err.println("Erreur lors du chargement des images: " + e.getMessage());
@@ -300,6 +315,9 @@ public class GameState {
             centerExplosion.setBombOwner(currentBomb.getOwner());
             explosions.add(centerExplosion);
 
+            // Détruire les power-ups à la position centrale
+            destroyPowerUpAt(x, y);
+
             // Propager l'explosion dans les 4 directions
             int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
             for (int[] dir : directions) {
@@ -325,12 +343,85 @@ public class GameState {
                     // Chercher des bombes à faire exploser en chaîne
                     findAndQueueChainBombs(newX, newY, currentBomb.getOwner(), chainExplosions, explodedPositions);
 
+                    // Détruire les power-ups à cette position
+                    destroyPowerUpAt(newX, newY);
+
                     if (tile == TileType.WALL_DESTRUCTIBLE) {
                         grid[newX][newY] = TileType.GRASS;
+
+                        // Possibilité de générer un power-up lorsqu'un mur est détruit
+                        generatePowerUp(newX, newY);
+
                         break;
                     }
                 }
             }
+        }
+    }
+
+    private void destroyPowerUpAt(int x, int y) {
+        Iterator<PowerUp> iterator = powerUps.iterator();
+        while (iterator.hasNext()) {
+            PowerUp powerUp = iterator.next();
+            if (powerUp.getX() == x && powerUp.getY() == y) {
+                iterator.remove();
+                break; // Un seul power-up par case
+            }
+        }
+    }
+
+    private void generatePowerUp(int x, int y) {
+        Random random = new Random();
+
+        // 15% de chance de générer un power-up
+        if (random.nextDouble() < 0.15) {
+            double powerUpRoll = random.nextDouble();
+            PowerUpType type;
+
+            // Distribution: 45% Extra Bomb, 45% Explosion Expander, 10% Maximum Explosion
+            if (powerUpRoll < 0.45) {
+                type = PowerUpType.EXTRA_BOMB;
+            } else if (powerUpRoll < 0.90) {
+                type = PowerUpType.EXPLOSION_EXPANDER;
+            } else {
+                type = PowerUpType.MAXIMUM_EXPLOSION; // Rare
+            }
+
+            powerUps.add(new PowerUp(x, y, type));
+        }
+    }
+
+    public void checkPowerUpCollisions() {
+        Iterator<PowerUp> iterator = powerUps.iterator();
+        while (iterator.hasNext()) {
+            PowerUp powerUp = iterator.next();
+
+            for (Player player : players) {
+                if (player.isAlive() && player.getX() == powerUp.getX() && player.getY() == powerUp.getY()) {
+                    applyPowerUp(player, powerUp);
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
+    }
+
+    private void applyPowerUp(Player player, PowerUp powerUp) {
+        switch (powerUp.getType()) {
+            case EXTRA_BOMB:
+                player.increaseMaxBombs();
+                System.out.println("Joueur " + player.getId() + " a obtenu un Extra Bomb! Bombes max: " + player.getMaxBombs());
+                break;
+
+            case EXPLOSION_EXPANDER:
+                player.increaseBombRange();
+                System.out.println("Joueur " + player.getId() + " a obtenu un Explosion Expander! Portée: " + player.getBombRange());
+                break;
+
+            case MAXIMUM_EXPLOSION:
+                player.setMaximumExplosion();
+                System.out.println("Joueur " + player.getId() + " a obtenu un Maximum Explosion! Portée maximale!");
+                break;
         }
     }
 
@@ -409,6 +500,75 @@ public class GameState {
                 .orElse(null);
     }
 
+    public void startDeathMatch() {
+        if (!deathMatchActive) {
+            deathMatchActive = true;
+            deathMatchRing = 0;
+            lastDeathMatchUpdate = System.currentTimeMillis();
+            System.out.println("DEATH MATCH ACTIVÉ!");
+        }
+    }
+
+    public boolean isDeathMatchActive() {
+        return deathMatchActive;
+    }
+
+    public void updateDeathMatch() {
+        if (!deathMatchActive) return;
+
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastDeathMatchUpdate >= DEATH_MATCH_INTERVAL) {
+            advanceDeathMatchRing();
+            lastDeathMatchUpdate = currentTime;
+        }
+    }
+
+    private void advanceDeathMatchRing() {
+        if (deathMatchRing >= DEATH_MATCH_MAX_RINGS) {
+            return; // Arrêter quand on atteint le centre
+        }
+
+        // Avancer d'un niveau de contraction
+        deathMatchRing++;
+
+        // Transformer les bordures en murs indestructibles
+        int ringX = deathMatchRing;
+        int ringY = deathMatchRing;
+        int maxX = GRID_WIDTH - 1 - ringX;
+        int maxY = GRID_HEIGHT - 1 - ringY;
+
+        // Transformer le périmètre actuel en murs indestructibles
+        for (int x = ringX; x <= maxX; x++) {
+            // Murs horizontaux (haut et bas)
+            checkAndTransformToWall(x, ringY);
+            checkAndTransformToWall(x, maxY);
+        }
+
+        for (int y = ringY + 1; y < maxY; y++) {
+            // Murs verticaux (gauche et droite)
+            checkAndTransformToWall(ringX, y);
+            checkAndTransformToWall(maxX, y);
+        }
+
+        System.out.println("DEATH MATCH: L'arène se réduit! Niveau " + deathMatchRing);
+    }
+
+    private void checkAndTransformToWall(int x, int y) {
+        // Vérifier si un joueur est sur cette case
+        for (Player player : players) {
+            if (player.isAlive() && player.getX() == x && player.getY() == y) {
+                player.killByDeathMatch();
+                System.out.println("Joueur " + player.getId() + " a été écrasé par les murs!");
+            }
+        }
+
+        // Détruire tout power-up à cette position
+        destroyPowerUpAt(x, y);
+
+        // Transformer en mur indestructible
+        grid[x][y] = TileType.WALL_INDESTRUCTIBLE;
+    }
+
     public String getFormattedTimeRemaining() {
         long timeLeft = getTimeRemaining();
         long minutes = timeLeft / 60000;
@@ -455,6 +615,41 @@ public class GameState {
             }
         }
 
+        // Dessiner les power-ups
+        for (PowerUp powerUp : powerUps) {
+            Image powerUpImage = null;
+            Color fallbackColor = null;
+
+            switch (powerUp.getType()) {
+                case EXTRA_BOMB:
+                    powerUpImage = extraBombImage;
+                    fallbackColor = Color.BLUE;
+                    break;
+
+                case EXPLOSION_EXPANDER:
+                    powerUpImage = explosionExpanderImage;
+                    fallbackColor = Color.RED;
+                    break;
+
+                case MAXIMUM_EXPLOSION:
+                    powerUpImage = maximumExplosionImage;
+                    fallbackColor = Color.YELLOW;
+                    break;
+            }
+
+            if (powerUpImage != null && !powerUpImage.isError()) {
+                gc.drawImage(powerUpImage, powerUp.getX() * tileSize, powerUp.getY() * tileSize, tileSize, tileSize);
+            } else {
+                // Fallback si l'image n'est pas disponible
+                gc.setFill(fallbackColor);
+                gc.fillOval(powerUp.getX() * tileSize + 5, powerUp.getY() * tileSize + 5,
+                        tileSize - 10, tileSize - 10);
+                gc.setStroke(Color.WHITE);
+                gc.strokeOval(powerUp.getX() * tileSize + 5, powerUp.getY() * tileSize + 5,
+                        tileSize - 10, tileSize - 10);
+            }
+        }
+
         // Dessiner les explosions
         for (Explosion explosion : explosions) {
             double intensity = (double) explosion.getTimeLeft() / explosion.getDuration();
@@ -487,13 +682,13 @@ public class GameState {
 
                 // Ajouter un indicateur de temps (petit cercle qui rétrécit)
                 long timeLeft = bomb.getTimeLeft();
-                double progress = timeLeft / 3000.0;
+                double progress = timeLeft / 2000.0; // Adapté pour 2 secondes
                 if (progress > 0) {
                     gc.setFill(Color.RED);
                     double indicatorSize = 8 * progress;
                     // Position en haut à droite, presque au bord
-                    gc.fillOval(bomb.getX() * tileSize + tileSize - indicatorSize - 2, // 2px du bord droit
-                            bomb.getY() * tileSize + 2,                              // 2px du bord haut
+                    gc.fillOval(bomb.getX() * tileSize + tileSize - indicatorSize - 2,
+                            bomb.getY() * tileSize + 2,
                             indicatorSize, indicatorSize);
                 }
             } else {
@@ -503,12 +698,11 @@ public class GameState {
                         tileSize - 10, tileSize - 10);
 
                 long timeLeft = bomb.getTimeLeft();
-                double progress = timeLeft / 3000.0;
+                double progress = timeLeft / 2000.0; // Adapté pour 2 secondes
                 gc.setFill(Color.RED);
                 double wickSize = (tileSize - 16) * progress;
-                // Position également modifiée pour la version fallback
-                gc.fillOval(bomb.getX() * tileSize + tileSize - wickSize - 2, // 2px du bord droit
-                        bomb.getY() * tileSize + 2,                        // 2px du bord haut
+                gc.fillOval(bomb.getX() * tileSize + tileSize - wickSize - 2,
+                        bomb.getY() * tileSize + 2,
                         wickSize, wickSize);
             }
         }

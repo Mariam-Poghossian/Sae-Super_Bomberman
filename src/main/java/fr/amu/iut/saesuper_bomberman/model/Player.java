@@ -15,7 +15,9 @@ public class Player {
     private long lastBombTime;
     private long lastDamageTime;
     private static final long DAMAGE_IMMUNITY_DURATION = 1000;
+    private static final int MAXIMUM_EXPLOSION_RANGE = 10;
     private int killCount;
+    private long deathTime = 0; // Temps de la mort du joueur
 
     public Player(int id, int x, int y, Color color) {
         this.id = id;
@@ -59,6 +61,10 @@ public class Player {
         }
     }
 
+    public void setMaximumExplosion() {
+        bombRange = MAXIMUM_EXPLOSION_RANGE;
+    }
+
     public void bombExploded(Bomb bomb) {
         activeBombs.remove(bomb);
     }
@@ -68,17 +74,21 @@ public class Player {
         return alive && currentTime - lastDamageTime > DAMAGE_IMMUNITY_DURATION;
     }
 
-    public boolean takeDamage() {
-        if (!canTakeDamage()) {
-            return false;
+    public void killByDeathMatch() {
+        if (alive) {
+            alive = false;
+            deathTime = System.currentTimeMillis();
+            System.out.println("Joueur " + id + " est écrasé par un mur!");
         }
+    }
 
-        // Le joueur meurt immédiatement (plus de système de vies)
-        alive = false;
-        lastDamageTime = System.currentTimeMillis();
-
-        System.out.println("Joueur " + id + " est éliminé !");
-        return true;
+    public boolean takeDamage() {
+        if (canTakeDamage()) {
+            alive = false;
+            deathTime = System.currentTimeMillis();
+            return true;
+        }
+        return false;
     }
 
     public boolean isAlive() {
@@ -94,7 +104,10 @@ public class Player {
     }
 
     public void increaseBombRange() {
-        bombRange++;
+        // Limiter la portée au maximum défini
+        if (bombRange < MAXIMUM_EXPLOSION_RANGE) {
+            bombRange++;
+        }
     }
 
     public void increaseMaxBombs() {
@@ -118,7 +131,9 @@ public class Player {
     public int getActiveBombsCount() { return activeBombs.size(); }
     public List<Bomb> getActiveBombs() { return new ArrayList<>(activeBombs); }
     public int getKillCount() { return killCount; }
-
+    public long getDeathTime() {
+        return deathTime;
+    }
     public boolean canPlaceBomb() {
         return alive && activeBombs.size() < maxBombs;
     }
