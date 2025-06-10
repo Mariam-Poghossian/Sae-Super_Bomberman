@@ -65,9 +65,9 @@
         </HBox>
     </bottom>
     <left>
-        <VBox style="-fx-background-color: gray; -fx-min-width: 50;" />
+        <VBox style="-fx-background-color: gray; -fx-min-width: 107;" />
     </left>
     <right>
-        <VBox style="-fx-background-color: gray; -fx-min-width: 50;" />
+        <VBox style="-fx-background-color: gray; -fx-min-width: 107;" />
     </right>
 </BorderPane>

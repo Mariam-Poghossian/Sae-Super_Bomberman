@@ -45,7 +45,7 @@ public class GameController implements Initializable {
     @FXML
     private Label gameStatus;
 
-    private static final int TILE_SIZE = 30;
+    private static final int TILE_SIZE = 38;
     private static final long MOVEMENT_DELAY = 150_000_000;
 
     private GraphicsContext gc;
@@ -65,9 +65,9 @@ public class GameController implements Initializable {
         gc = gameCanvas.getGraphicsContext2D();
         gameState = new GameState();
 
-        // Ajuster la taille du canvas pour la nouvelle grille 17x13
-        gameCanvas.setWidth(17 * TILE_SIZE);  // 17 * 30 = 510 pixels
-        gameCanvas.setHeight(13 * TILE_SIZE); // 13 * 30 = 390 pixels
+        // Ajuster la taille du canvas pour la nouvelle fenêtre
+        gameCanvas.setWidth(17 * TILE_SIZE);  // 17 * 38 = 646 pixels
+        gameCanvas.setHeight(13 * TILE_SIZE); // 13 * 38 = 494 pixels
 
         for (int i = 0; i < 4; i++) {
             lastMovementTime[i] = 0;

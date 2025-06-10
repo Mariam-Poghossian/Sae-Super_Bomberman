@@ -16,7 +16,7 @@ public class Game extends Application {
 
         GameController controller = loader.getController();
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 860, 650);  // Définir explicitement la taille
 
         // Passer la scène au contrôleur pour gérer les événements clavier
         controller.setScene(scene);

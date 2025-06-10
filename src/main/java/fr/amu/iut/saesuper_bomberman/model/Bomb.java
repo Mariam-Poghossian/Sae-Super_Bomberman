@@ -5,7 +5,7 @@ public class Bomb {
     private int range;
     private Player owner;
     private long creationTime;
-    private static final long EXPLOSION_DELAY = 3000; // 3 secondes
+    private static final long EXPLOSION_DELAY = 2000; // 2 secondes
     private boolean hasExploded = false;
 
     public Bomb(int x, int y, int range, Player owner) {
