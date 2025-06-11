@@ -26,6 +26,7 @@ public class GameState {
     private String currentTheme = "/fr/amu/iut/saesuper_bomberman/assets/bomberman/";
     public static final String DEFAULT_THEME = "/fr/amu/iut/saesuper_bomberman/assets/bomberman/";
     public static final String SPECIAL_THEME = "/fr/amu/iut/saesuper_bomberman/assets/themespecial1/";
+    public static final String SPECIAL_THEME2 = "/fr/amu/iut/saesuper_bomberman/assets/themespecial2/";
 
     // Images pour le rendu
     private Image grassImage;

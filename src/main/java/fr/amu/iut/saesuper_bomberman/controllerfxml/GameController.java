@@ -29,6 +29,14 @@ public class GameController implements Initializable {
     @FXML
     private ImageView player4Image;
     @FXML
+    private Label player1Name;
+    @FXML
+    private Label player2Name;
+    @FXML
+    private Label player3Name;
+    @FXML
+    private Label player4Name;
+    @FXML
     private Label player1Kills;
     @FXML
     private Label player2Kills;
@@ -50,6 +58,7 @@ public class GameController implements Initializable {
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private AnimationTimer gameLoop;
     private Scene scene;
+    private int currentThemeIndex = 0; // 0 = default, 1 = special1, 2 = special2
 
     private long[] lastMovementTime = new long[4];
     private boolean gameEndedByTime = false;
@@ -155,15 +164,31 @@ public class GameController implements Initializable {
 
         if (pressedKeys.contains(KeyCode.R)) {
             if (!themeChangePressed) {
+                // R ramène toujours au thème par défaut
                 gameState.changeTheme(GameState.DEFAULT_THEME);
+                currentThemeIndex = 0;
                 themeChangePressed = true;
                 gameStatus.setText("THÈME STANDARD ACTIVÉ");
             }
         } else if (pressedKeys.contains(KeyCode.T)) {
             if (!themeChangePressed) {
-                gameState.changeTheme(GameState.SPECIAL_THEME);
+                // T passe au thème suivant dans le cycle
+                currentThemeIndex = (currentThemeIndex + 1) % 3;
+                switch (currentThemeIndex) {
+                    case 0:
+                        gameState.changeTheme(GameState.DEFAULT_THEME);
+                        gameStatus.setText("THÈME STANDARD ACTIVÉ");
+                        break;
+                    case 1:
+                        gameState.changeTheme(GameState.SPECIAL_THEME);
+                        gameStatus.setText("THÈME SPÉCIAL 1 ACTIVÉ");
+                        break;
+                    case 2:
+                        gameState.changeTheme(GameState.SPECIAL_THEME2);
+                        gameStatus.setText("THÈME SPÉCIAL 2 ACTIVÉ");
+                        break;
+                }
                 themeChangePressed = true;
-                gameStatus.setText("THÈME SPÉCIAL ACTIVÉ");
             }
         } else {
             themeChangePressed = false;
@@ -432,6 +457,21 @@ public class GameController implements Initializable {
         return deadPlayers.stream()
                 .filter(p -> Math.abs(p.getDeathTime() - lastDeathTime) < 100) // Fenêtre de 100ms pour considérer comme simultané
                 .collect(Collectors.toList());
+    }
+
+    private Label getPlayerNameLabel(int playerIndex) {
+        switch (playerIndex) {
+            case 0:
+                return player1Name;
+            case 1:
+                return player2Name;
+            case 2:
+                return player3Name;
+            case 3:
+                return player4Name;
+            default:
+                return null;
+        }
     }
 
 
