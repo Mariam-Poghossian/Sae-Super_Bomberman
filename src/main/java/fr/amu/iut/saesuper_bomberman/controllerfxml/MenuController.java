@@ -25,7 +25,19 @@ import javafx.scene.media.MediaPlayer;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
+/**
+ * Contrôleur du menu principal de Super Bomberman.
+ * Gère l'initialisation de l'interface, les animations, la musique,
+ * et la navigation entre les différentes scènes (connexion, invité, etc.).
+ *
+ * - Affiche le fond animé et le logo.
+ * - Gère les boutons principaux (connexion, invité).
+ * - Lance et contrôle la musique de fond.
+ * - Permet de mettre en pause, reprendre ou réinitialiser les animations et la musique.
+ * - Charge dynamiquement le menu flottant du bas.
+ *
+ * FXML associé : Menu.fxml
+ */
 public class MenuController implements Initializable {
 
     @FXML
@@ -48,7 +60,9 @@ public class MenuController implements Initializable {
 
     private boolean logoAnimationDone = false;
     private Scene originalScene;
-
+    /**
+     * Initialise tous les éléments graphiques et animations du menu.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeAudio();
@@ -59,7 +73,9 @@ public class MenuController implements Initializable {
         initializeBottomMenu();
         initializeMainMenuButtons();
     }
-
+    /**
+     * Initialise et lance la musique de fond.
+     */
     private void initializeAudio() {
         try {
             String musicFile = "/fr/amu/iut/saesuper_bomberman/assets/audio/music.mp3";
@@ -77,7 +93,9 @@ public class MenuController implements Initializable {
             System.err.println("\u274C Erreur chargement audio : " + e.getMessage());
         }
     }
-
+    /**
+     * Charge et adapte l'image de fond.
+     */
     private void initializeBackground() {
         Image bg = new Image(getClass().getResource(
                 "/fr/amu/iut/saesuper_bomberman/assets/images/background.png"
@@ -87,6 +105,9 @@ public class MenuController implements Initializable {
         background.fitHeightProperty().bind(root.heightProperty());
     }
 
+    /**
+     * Ajoute les objets volants (montgolfière, dirigeables) à la scène.
+     */
     private void initializeFlyingObjects() {
         montgolfiere = new ImageView(new Image(getClass().getResource(
                 "/fr/amu/iut/saesuper_bomberman/assets/images/montgolfiere.png").toExternalForm()));
@@ -111,7 +132,9 @@ public class MenuController implements Initializable {
 
         root.getChildren().addAll(montgolfiere, dirigeable, petitDirigeable);
     }
-
+    /**
+     * Démarre les animations des objets volants.
+     */
     private void initializeAnimations() {
         mt = new TranslateTransition(Duration.seconds(35), montgolfiere);
         mt.setFromX(0);
@@ -135,6 +158,9 @@ public class MenuController implements Initializable {
         df.play();
     }
 
+    /**
+     * Ajoute le logo du jeu et prépare son animation.
+     */
     private void initializeLogo() {
         logo = new ImageView(new Image(getClass().getResource(
                 "/fr/amu/iut/saesuper_bomberman/assets/images/logo.png").toExternalForm()));
@@ -146,6 +172,9 @@ public class MenuController implements Initializable {
         root.getChildren().add(logo);
     }
 
+    /**
+     * Charge le menu flottant du bas.
+     */
     private void initializeBottomMenu() {
         try {
             bottomOverlay = FXMLLoader.load(getClass().getResource(
@@ -170,6 +199,9 @@ public class MenuController implements Initializable {
         }
     }
 
+    /**
+     * Crée et configure les boutons principaux du menu.
+     */
 
     private void initializeMainMenuButtons() {
         Button btnSeConnecter = new Button("SE CONNECTER");
@@ -438,19 +470,27 @@ public class MenuController implements Initializable {
         });
         logoPause.play();
     }
-
+    /**
+     * Modifie le volume de la musique.
+     * @param volume Valeur entre 0 et 100.
+     */
     public void setVolume(double volume) {
         if (mediaPlayer != null) {
             mediaPlayer.setVolume(volume / 100.0);
         }
     }
-
+    /**
+     * Coupe ou réactive le son.
+     * @param mute true pour couper, false pour réactiver.
+     */
     public void muteAudio(boolean mute) {
         if (mediaPlayer != null) {
             mediaPlayer.setVolume(mute ? 0 : 0.5);
         }
     }
-
+    /**
+     * Met en pause toutes les animations et la musique.
+     */
     public void pauseAllAnimations() {
         mt.pause(); dh.pause(); df.pause();
         if (!logoAnimationDone) {
@@ -459,7 +499,9 @@ public class MenuController implements Initializable {
         }
         if (mediaPlayer != null) mediaPlayer.pause();
     }
-
+    /**
+     * Reprend toutes les animations et la musique.
+     */
     public void resumeAllAnimations() {
         mt.play(); dh.play(); df.play();
         if (!logoAnimationDone) {
@@ -469,78 +511,81 @@ public class MenuController implements Initializable {
         if (mediaPlayer != null) mediaPlayer.play();
     }
 
-public void restartAllAnimations() {
-    // Réinitialisation des positions des objets volants
-    montgolfiere.setLayoutX(-180);
-    dirigeable.setLayoutX(-250);
-    petitDirigeable.setLayoutX(950);
+    /**
+     * Réinitialise et relance toutes les animations et la musique.
+     */
+    public void restartAllAnimations() {
+        // Réinitialisation des positions des objets volants
+        montgolfiere.setLayoutX(-180);
+        dirigeable.setLayoutX(-250);
+        petitDirigeable.setLayoutX(950);
 
-    // Arrêt des animations en cours
-    mt.stop();
-    dh.stop();
-    df.stop();
+        // Arrêt des animations en cours
+        mt.stop();
+        dh.stop();
+        df.stop();
 
-    // Réinitialisation du logo
-    logo.setVisible(true);
-    logo.setOpacity(0);
-    logo.setScaleX(0.5);
-    logo.setScaleY(0.5);
-    logoAnimationDone = false;
+        // Réinitialisation du logo
+        logo.setVisible(true);
+        logo.setOpacity(0);
+        logo.setScaleX(0.5);
+        logo.setScaleY(0.5);
+        logoAnimationDone = false;
 
-    // Récupérer la VBox des boutons
-    VBox menuBox = root.getChildren().stream()
-            .filter(node -> node instanceof VBox && node.getLayoutY() == 470)
-            .map(node -> (VBox) node)
-            .findFirst()
-            .orElse(null);
+        // Récupérer la VBox des boutons
+        VBox menuBox = root.getChildren().stream()
+                .filter(node -> node instanceof VBox && node.getLayoutY() == 470)
+                .map(node -> (VBox) node)
+                .findFirst()
+                .orElse(null);
 
-    if (menuBox != null) {
-        // Réinitialisation des boutons
-        menuBox.setVisible(true);
-        menuBox.setOpacity(0);
-        menuBox.setScaleX(0.5);
-        menuBox.setScaleY(0.5);
+        if (menuBox != null) {
+            // Réinitialisation des boutons
+            menuBox.setVisible(true);
+            menuBox.setOpacity(0);
+            menuBox.setScaleX(0.5);
+            menuBox.setScaleY(0.5);
 
-        // Animation des boutons
-        FadeTransition menuFade = new FadeTransition(Duration.seconds(1.5), menuBox);
-        menuFade.setFromValue(0);
-        menuFade.setToValue(1);
+            // Animation des boutons
+            FadeTransition menuFade = new FadeTransition(Duration.seconds(1.5), menuBox);
+            menuFade.setFromValue(0);
+            menuFade.setToValue(1);
 
-        ScaleTransition menuScale = new ScaleTransition(Duration.seconds(1.5), menuBox);
-        menuScale.setFromX(0.5);
-        menuScale.setToX(1);
-        menuScale.setFromY(0.5);
-        menuScale.setToY(1);
+            ScaleTransition menuScale = new ScaleTransition(Duration.seconds(1.5), menuBox);
+            menuScale.setFromX(0.5);
+            menuScale.setToX(1);
+            menuScale.setFromY(0.5);
+            menuScale.setToY(1);
 
-        ParallelTransition menuAnimation = new ParallelTransition(menuFade, menuScale);
-        menuAnimation.play();
+            ParallelTransition menuAnimation = new ParallelTransition(menuFade, menuScale);
+            menuAnimation.play();
+        }
+
+        // Animation du logo
+        FadeTransition fade = new FadeTransition(Duration.seconds(1.5), logo);
+        fade.setFromValue(0);
+        fade.setToValue(1);
+
+        ScaleTransition scale = new ScaleTransition(Duration.seconds(1.5), logo);
+        scale.setFromX(0.5);
+        scale.setToX(1);
+        scale.setFromY(0.5);
+        scale.setToY(1);
+
+        logoAnimation = new ParallelTransition(fade, scale);
+        logoAnimation.setOnFinished(event -> logoAnimationDone = true);
+        logoAnimation.play();
+
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.play();
+        }
+
+        // Redémarrage des animations de base
+        mt.playFromStart();
+        dh.playFromStart();
+        df.playFromStart();
     }
-
-    // Animation du logo
-    FadeTransition fade = new FadeTransition(Duration.seconds(1.5), logo);
-    fade.setFromValue(0);
-    fade.setToValue(1);
-
-    ScaleTransition scale = new ScaleTransition(Duration.seconds(1.5), logo);
-    scale.setFromX(0.5);
-    scale.setToX(1);
-    scale.setFromY(0.5);
-    scale.setToY(1);
-
-    logoAnimation = new ParallelTransition(fade, scale);
-    logoAnimation.setOnFinished(event -> logoAnimationDone = true);
-    logoAnimation.play();
-
-    if (mediaPlayer != null) {
-        mediaPlayer.stop();
-        mediaPlayer.play();
-    }
-
-    // Redémarrage des animations de base
-    mt.playFromStart();
-    dh.playFromStart();
-    df.playFromStart();
-}
 
 
 
