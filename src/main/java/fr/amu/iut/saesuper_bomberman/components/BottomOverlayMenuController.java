@@ -13,6 +13,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+/**
+ * Contrôleur du menu overlay situé en bas de l'interface de jeu.
+ * Gère les actions sur le volume, le mode plein écran, la pause, le redémarrage et l'accès aux paramètres de contrôle.
+ */
 public class BottomOverlayMenuController {
 
     @FXML
@@ -37,6 +41,9 @@ public class BottomOverlayMenuController {
     private boolean isFullscreen = false;
     private boolean isPaused = false;
 
+    /**
+     * Ouvre la fenêtre des paramètres de contrôle avec un fond semi-transparent.
+     */
     @FXML
     public void openControlSettings() {
         try {
@@ -71,8 +78,10 @@ public class BottomOverlayMenuController {
             System.err.println("❌ Erreur ouverture paramètres : " + e.getMessage());
         }
     }
-
-
+    /**
+     * Initialise les comportements des boutons et du menu overlay.
+     * Gère l'affichage du menu, le mute, le volume, le plein écran, la pause et le redémarrage.
+     */
 
     @FXML
     public void initialize() {

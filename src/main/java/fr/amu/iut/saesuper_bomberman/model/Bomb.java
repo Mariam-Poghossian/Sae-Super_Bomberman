@@ -1,5 +1,6 @@
 package fr.amu.iut.saesuper_bomberman.model;
 
+
 public class Bomb {
     private int x, y;
     private int range;
