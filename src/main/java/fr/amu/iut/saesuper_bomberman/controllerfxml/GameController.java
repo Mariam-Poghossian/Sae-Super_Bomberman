@@ -405,10 +405,6 @@ public class GameController implements Initializable {
     }
 
     private void checkGameState() {
-        if (gameEndedByTime) {
-            return;
-        }
-
         long alivePlayers = gameState.getPlayers().stream().mapToLong(p -> p.isAlive() ? 1 : 0).sum();
 
         if (alivePlayers <= 1) {
@@ -464,8 +460,14 @@ public class GameController implements Initializable {
                 ).play();
             }
         } else {
-            gameStatus.setText("BATTLE IN PROGRESS - " + alivePlayers + " PLAYERS ALIVE");
-            gameStatus.setStyle("-fx-text-fill: white; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
+            // Si nous sommes en Death Match, gardez le statut de Death Match
+            if (gameEndedByTime) {
+                gameStatus.setText("DEATH MATCH - " + alivePlayers + " PLAYERS ALIVE");
+                gameStatus.setStyle("-fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
+            } else {
+                gameStatus.setText("BATTLE IN PROGRESS - " + alivePlayers + " PLAYERS ALIVE");
+                gameStatus.setStyle("-fx-text-fill: white; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
+            }
         }
     }
 
