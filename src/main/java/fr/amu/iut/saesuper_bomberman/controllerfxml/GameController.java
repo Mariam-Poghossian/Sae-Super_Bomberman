@@ -90,10 +90,10 @@ public class GameController implements Initializable {
             String basePath = "/fr/amu/iut/saesuper_bomberman/assets/bomberman/";
 
             // Charger les images P1, P2, P3, P4
-            p1Image = new Image(getClass().getResourceAsStream(basePath + "P1.png"));
-            p2Image = new Image(getClass().getResourceAsStream(basePath + "P2.png"));
-            p3Image = new Image(getClass().getResourceAsStream(basePath + "P3.png"));
-            p4Image = new Image(getClass().getResourceAsStream(basePath + "P4.png"));
+            p1Image = new Image(getClass().getResourceAsStream(basePath + "p1.png"));
+            p2Image = new Image(getClass().getResourceAsStream(basePath + "p2.png"));
+            p3Image = new Image(getClass().getResourceAsStream(basePath + "p3.png"));
+            p4Image = new Image(getClass().getResourceAsStream(basePath + "p4.png"));
 
             // Assigner les images aux ImageView
             if (p1Image != null && !p1Image.isError()) {
@@ -111,6 +111,33 @@ public class GameController implements Initializable {
 
         } catch (Exception e) {
             System.err.println("Erreur lors du chargement des images des joueurs pour l'interface: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void reloadPlayerInterfaceImages(String themePath) {
+        try {
+            // Charger les images P1, P2, P3, P4 avec le nouveau thème
+            p1Image = new Image(getClass().getResourceAsStream(themePath + "p1.png"));
+            p2Image = new Image(getClass().getResourceAsStream(themePath + "p2.png"));
+            p3Image = new Image(getClass().getResourceAsStream(themePath + "p3.png"));
+            p4Image = new Image(getClass().getResourceAsStream(themePath + "p4.png"));
+
+            // Assigner les images aux ImageView
+            if (p1Image != null && !p1Image.isError()) {
+                player1Image.setImage(p1Image);
+            }
+            if (p2Image != null && !p2Image.isError()) {
+                player2Image.setImage(p2Image);
+            }
+            if (p3Image != null && !p3Image.isError()) {
+                player3Image.setImage(p3Image);
+            }
+            if (p4Image != null && !p4Image.isError()) {
+                player4Image.setImage(p4Image);
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors du rechargement des images des joueurs pour l'interface: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -166,6 +193,7 @@ public class GameController implements Initializable {
             if (!themeChangePressed) {
                 // R ramène toujours au thème par défaut
                 gameState.changeTheme(GameState.DEFAULT_THEME);
+                reloadPlayerInterfaceImages(GameState.DEFAULT_THEME);
                 currentThemeIndex = 0;
                 themeChangePressed = true;
                 gameStatus.setText("THÈME STANDARD ACTIVÉ");
@@ -177,20 +205,24 @@ public class GameController implements Initializable {
                 switch (currentThemeIndex) {
                     case 0:
                         gameState.changeTheme(GameState.DEFAULT_THEME);
+                        reloadPlayerInterfaceImages(GameState.DEFAULT_THEME);
                         gameStatus.setText("THÈME STANDARD ACTIVÉ");
                         break;
                     case 1:
                         gameState.changeTheme(GameState.SPECIAL_THEME);
+                        reloadPlayerInterfaceImages(GameState.SPECIAL_THEME);
                         gameStatus.setText("THÈME SPÉCIAL 1 ACTIVÉ");
                         break;
                     case 2:
                         gameState.changeTheme(GameState.SPECIAL_THEME2);
+                        reloadPlayerInterfaceImages(GameState.SPECIAL_THEME2);
                         gameStatus.setText("THÈME SPÉCIAL 2 ACTIVÉ");
                         break;
                 }
                 themeChangePressed = true;
             }
         } else {
+            // Réinitialiser themeChangePressed lorsque ni R ni T ne sont appuyés
             themeChangePressed = false;
         }
 
@@ -485,6 +517,15 @@ public class GameController implements Initializable {
         for (int i = 0; i < 4; i++) {
             lastMovementTime[i] = 0;
         }
+
+        // Recharger les images avec le thème actuel
+        String currentTheme = GameState.DEFAULT_THEME;
+        switch (currentThemeIndex) {
+            case 0: currentTheme = GameState.DEFAULT_THEME; break;
+            case 1: currentTheme = GameState.SPECIAL_THEME; break;
+            case 2: currentTheme = GameState.SPECIAL_THEME2; break;
+        }
+        reloadPlayerInterfaceImages(currentTheme);
 
         // Remettre les images en opacité normale et réinitialiser les scores
         player1Image.setOpacity(1.0);
