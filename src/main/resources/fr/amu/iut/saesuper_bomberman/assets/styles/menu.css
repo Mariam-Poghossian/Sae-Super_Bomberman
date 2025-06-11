@@ -1,0 +1,22 @@
+@font-face {
+    font-family: 'Press Start 2P';
+    src: url('../fonts/PressStart2P-Regular.ttf') format('truetype');
+}
+
+
+.menu-button {
+    -fx-font-family: 'Press Start 2P';
+    -fx-font-size: 22px;
+    -fx-text-fill: linear-gradient(to bottom, #ff6f00 0%, #ffff00 50%, #e31f1f 100%);
+    -fx-background-color: transparent !important;
+    -fx-background-radius: 0 !important;
+    -fx-border-width: 0 !important;
+    -fx-border-color: transparent !important;
+    -fx-padding: 8 32 8 32;
+    -fx-effect: dropshadow(gaussian, black, 2, 0.7, 2, 2);
+    -fx-alignment: center;
+}
+.menu-button:hover {
+    -fx-text-fill: linear-gradient(to bottom, #ff6f00 0%, #ffff00 50%, #e31f1f 100%);
+    -fx-label-padding: 0 0 0 24px;
+}

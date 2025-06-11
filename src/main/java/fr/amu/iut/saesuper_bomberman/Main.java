@@ -16,7 +16,9 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
                 "/fr/amu/iut/saesuper_bomberman/controllerfxml/menu.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), width, height);
-
+        scene.getStylesheets().add(getClass().getResource(
+                "/fr/amu/iut/saesuper_bomberman/assets/styles/menu.css"
+        ).toExternalForm());
         stage.setTitle("Super Bomberman");
         stage.setScene(scene);
         stage.setResizable(false);

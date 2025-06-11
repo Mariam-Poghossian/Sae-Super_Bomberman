@@ -7,3 +7,34 @@
 .menu-button:hover {
     -fx-background-color: #FFA500;
 }
+
+
+
+
+.player-button {
+    -fx-background-color: #4a4a4a;
+    -fx-text-fill: white;
+    -fx-min-width: 100px;
+    -fx-min-height: 30px;
+}
+
+.player-button:hover {
+    -fx-background-color: #666666;
+}
+
+.set-button {
+    -fx-background-color: #ffa500;
+    -fx-text-fill: white;
+}
+
+.action-button {
+    -fx-background-color: #ffa500;
+    -fx-text-fill: white;
+    -fx-min-width: 80px;
+}
+
+.close-button {
+    -fx-background-color: #808080;
+    -fx-text-fill: white;
+    -fx-min-width: 80px;
+}

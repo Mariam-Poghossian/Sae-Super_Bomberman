@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="fr.amu.iut.saesuper_bomberman.components.ControlSettingsController"
+      spacing="10" alignment="TOP_CENTER"
+      style="-fx-background-color: rgba(0, 0, 0, 0.6);
+             -fx-background-radius: 10;
+             -fx-padding: 20;
+             -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0.0, 0.0);">
+
+    <Label text="Paramètres"
+           style="-fx-font-size: 24;
+              -fx-text-fill: white;
+              -fx-padding: 0 0 30 0;"/> <!-- Ajoute 30 pixels d'espace en bas -->
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Joueur 1" onAction="#selectPlayer1" styleClass="player-button"/>
+        <Button text="Joueur 2" onAction="#selectPlayer2" styleClass="player-button"/>
+        <Button text="Joueur 3" onAction="#selectPlayer3" styleClass="player-button"/>
+        <Button text="Joueur 4" onAction="#selectPlayer4" styleClass="player-button"/>
+    </HBox>
+
+
+    <GridPane hgap="10" vgap="10">
+        <padding><Insets top="20"/></padding>
+
+        <Label text="Gauche :" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: white;"/>
+        <TextField fx:id="leftKey" GridPane.rowIndex="0" GridPane.columnIndex="1" text="fleche gauche" editable="false"/>
+
+
+        <Label text="Droite :" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-text-fill: white;"/>
+        <TextField fx:id="rightKey" GridPane.rowIndex="1" GridPane.columnIndex="1" text="fleche droite" editable="false"/>
+
+
+        <Label text="Haut :" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-text-fill: white;"/>
+        <TextField fx:id="upKey" GridPane.rowIndex="2" GridPane.columnIndex="1" text="fleche haut" editable="false"/>
+
+
+        <Label text="Bas :" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-text-fill: white;"/>
+        <TextField fx:id="downKey" GridPane.rowIndex="3" GridPane.columnIndex="1" text="fleche bas" editable="false"/>
+
+
+        <Label text="Bombe :" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-text-fill: white;"/>
+        <TextField fx:id="bombKey" GridPane.rowIndex="4" GridPane.columnIndex="1" text="espace" editable="false"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER">
+        <padding><Insets top="20"/></padding>
+        <Button text="Fermer" onAction="#closeWindow" styleClass="close-button"/>
+    </HBox>
+</VBox>
