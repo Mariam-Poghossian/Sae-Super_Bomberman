@@ -169,7 +169,6 @@ public class MenuController implements Initializable {
         }
     }
 
-    // ... tout le code existant précédemment (inchangé jusqu'à la fin de initializeMainMenuButtons)
 
     private void initializeMainMenuButtons() {
         Button btnSeConnecter = new Button("SE CONNECTER");
@@ -195,6 +194,7 @@ public class MenuController implements Initializable {
         btnInvite.setGraphicTextGap(12);
         btnInvite.setOnMouseEntered(e -> triangleInvite.setVisible(true));
         btnInvite.setOnMouseExited(e -> triangleInvite.setVisible(false));
+
 
 
         btnSeConnecter.setOnAction(e -> {
