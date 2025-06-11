@@ -53,7 +53,7 @@
                 </HBox>
             </HBox>
 
-            <Label alignment="CENTER" maxWidth="Infinity" style="-fx-padding: 6; -fx-background-color: darkorange; -fx-text-fill: white; -fx-font-size: 10px; -fx-text-alignment: center; -fx-font-family: 'Courier New';" text="ARROWS+SPACE | ZQSD+E | IJKL+O | 8456+9" />
+            <Label alignment="CENTER" maxWidth="Infinity" style="-fx-padding: 6; -fx-background-color: darkorange; -fx-text-fill: white; -fx-font-size: 10px; -fx-text-alignment: center; -fx-font-family: 'Courier New';" text="ARROWS+SPACE | ZQSD+E | IJKL+O | 8456+9 | R/T=THEME" />
         </VBox>
     </top>
     <center>

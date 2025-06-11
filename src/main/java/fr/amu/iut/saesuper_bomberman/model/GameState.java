@@ -23,6 +23,9 @@ public class GameState {
     private long lastDeathMatchUpdate = 0;
     private static final long DEATH_MATCH_INTERVAL = 4000; // 3 secondes entre chaque avancée de murs
     private static final int DEATH_MATCH_MAX_RINGS = (GRID_WIDTH < GRID_HEIGHT ? GRID_WIDTH : GRID_HEIGHT) / 2;
+    private String currentTheme = "/fr/amu/iut/saesuper_bomberman/assets/bomberman/";
+    public static final String DEFAULT_THEME = "/fr/amu/iut/saesuper_bomberman/assets/bomberman/";
+    public static final String SPECIAL_THEME = "/fr/amu/iut/saesuper_bomberman/assets/themespecial1/";
 
     // Images pour le rendu
     private Image grassImage;
@@ -51,7 +54,7 @@ public class GameState {
 
     private void loadImages() {
         try {
-            String basePath = "/fr/amu/iut/saesuper_bomberman/assets/bomberman/";
+            String basePath = currentTheme;
 
             // Charger les images des tuiles
             grassImage = new Image(getClass().getResourceAsStream(basePath + "grass.png"));
@@ -146,6 +149,12 @@ public class GameState {
             }
             attempts++;
         }
+    }
+
+    public void changeTheme(String themePath) {
+        this.currentTheme = themePath;
+        loadImages(); // Recharger les images avec le nouveau thème
+        System.out.println("Thème changé: " + themePath);
     }
 
     private void fillRemainingSpaces(Random random) {

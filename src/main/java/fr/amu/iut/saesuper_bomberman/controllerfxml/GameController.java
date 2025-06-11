@@ -44,6 +44,7 @@ public class GameController implements Initializable {
     private static final int TILE_SIZE = 38;
     private static final long MOVEMENT_DELAY = 150_000_000;
 
+    private boolean themeChangePressed = false;
     private GraphicsContext gc;
     private GameState gameState;
     private Set<KeyCode> pressedKeys = new HashSet<>();
@@ -150,6 +151,22 @@ public class GameController implements Initializable {
             gameStatus.setText("DEATH MATCH ACTIVÉ! SURVIVEZ!");
             gameStatus.setStyle("-fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-font-size: 12px;");
             timerLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold; -fx-font-size: 18px; -fx-font-family: 'Courier New';");
+        }
+
+        if (pressedKeys.contains(KeyCode.R)) {
+            if (!themeChangePressed) {
+                gameState.changeTheme(GameState.DEFAULT_THEME);
+                themeChangePressed = true;
+                gameStatus.setText("THÈME STANDARD ACTIVÉ");
+            }
+        } else if (pressedKeys.contains(KeyCode.T)) {
+            if (!themeChangePressed) {
+                gameState.changeTheme(GameState.SPECIAL_THEME);
+                themeChangePressed = true;
+                gameStatus.setText("THÈME SPÉCIAL ACTIVÉ");
+            }
+        } else {
+            themeChangePressed = false;
         }
 
         // Mettre à jour le Death Match si actif
