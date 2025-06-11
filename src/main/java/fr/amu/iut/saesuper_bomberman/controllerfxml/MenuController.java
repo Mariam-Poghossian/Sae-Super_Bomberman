@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -307,6 +308,92 @@ public class MenuController implements Initializable {
                 ex.printStackTrace();
             }
         });
+
+
+        btnInvite.setOnAction(e -> {
+            try {
+                originalScene = btnInvite.getScene();
+                AnchorPane loginRoot = new AnchorPane();
+
+                ImageView loginBackground = new ImageView(new Image(getClass().getResource(
+                        "/fr/amu/iut/saesuper_bomberman/assets/images/background.png").toExternalForm()));
+                loginBackground.fitWidthProperty().bind(loginRoot.widthProperty());
+                loginBackground.fitHeightProperty().bind(loginRoot.heightProperty());
+
+                ImageView loginMontgolfiere = new ImageView(new Image(getClass().getResource(
+                        "/fr/amu/iut/saesuper_bomberman/assets/images/montgolfiere.png").toExternalForm()));
+                loginMontgolfiere.setFitWidth(200);
+                loginMontgolfiere.setPreserveRatio(true);
+                loginMontgolfiere.setLayoutX(-180);
+                loginMontgolfiere.setLayoutY(50);
+
+                ImageView loginDirigeable = new ImageView(new Image(getClass().getResource(
+                        "/fr/amu/iut/saesuper_bomberman/assets/images/dirigeable_h.png").toExternalForm()));
+                loginDirigeable.setFitWidth(150);
+                loginDirigeable.setPreserveRatio(true);
+                loginDirigeable.setLayoutX(-250);
+                loginDirigeable.setLayoutY(370);
+
+                ImageView loginPetitDirigeable = new ImageView(new Image(getClass().getResource(
+                        "/fr/amu/iut/saesuper_bomberman/assets/images/dirigeable_fire.png").toExternalForm()));
+                loginPetitDirigeable.setFitWidth(280);
+                loginPetitDirigeable.setPreserveRatio(true);
+                loginPetitDirigeable.setLayoutX(950);
+                loginPetitDirigeable.setLayoutY(260);
+
+                loginRoot.getChildren().addAll(loginBackground, loginMontgolfiere, loginDirigeable, loginPetitDirigeable);
+
+                Button backButton = new Button();
+                ImageView backArrow = new ImageView(new Image(getClass().getResource(
+                        "/fr/amu/iut/saesuper_bomberman/assets/images/retour.png").toExternalForm()));
+                backArrow.setFitWidth(40);
+                backArrow.setFitHeight(40);
+                backButton.setGraphic(backArrow);
+                backButton.setStyle("-fx-background-color: transparent; -fx-padding: 10px;");
+                AnchorPane.setTopAnchor(backButton, 20.0);
+                AnchorPane.setLeftAnchor(backButton, 20.0);
+                backButton.setOnAction(evt -> {
+                    Stage stage = (Stage) backButton.getScene().getWindow();
+                    stage.setScene(originalScene);
+                });
+                loginRoot.getChildren().add(backButton);
+
+                Button startButton = new Button("START");
+                startButton.setStyle("-fx-background-color: #22ca22;-fx-text-fill: white;-fx-font-family: 'Press Start 2P';-fx-font-size: 20px;-fx-min-width: 100px;-fx-min-height: 40px;");
+                AnchorPane.setBottomAnchor(startButton, 100.0);
+                AnchorPane.setRightAnchor(startButton, 50.0);
+                loginRoot.getChildren().add(startButton);
+
+                TranslateTransition mtLogin = new TranslateTransition(Duration.seconds(35), loginMontgolfiere);
+                mtLogin.setFromX(0); mtLogin.setToX(1200);
+                mtLogin.setCycleCount(Animation.INDEFINITE);
+                mtLogin.setInterpolator(Interpolator.LINEAR);
+                mtLogin.play();
+
+                TranslateTransition dhLogin = new TranslateTransition(Duration.seconds(28), loginDirigeable);
+                dhLogin.setFromX(0); dhLogin.setToX(1200);
+                dhLogin.setCycleCount(Animation.INDEFINITE);
+                dhLogin.setInterpolator(Interpolator.LINEAR);
+                dhLogin.play();
+
+                TranslateTransition dfLogin = new TranslateTransition(Duration.seconds(25), loginPetitDirigeable);
+                dfLogin.setFromX(0); dfLogin.setToX(-1200);
+                dfLogin.setCycleCount(Animation.INDEFINITE);
+                dfLogin.setInterpolator(Interpolator.LINEAR);
+                dfLogin.play();
+
+                Scene loginScene = new Scene(loginRoot,
+                        originalScene.getWidth(),
+                        originalScene.getHeight());
+
+                Stage stage = (Stage) btnSeConnecter.getScene().getWindow();
+                stage.setScene(loginScene);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+
 
 
         VBox menuBox = new VBox(6, btnSeConnecter, btnInvite);
