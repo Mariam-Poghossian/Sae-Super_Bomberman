@@ -16,6 +16,15 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Contrôleur principal du jeu Bomberman.
+ * Gère les interactions utilisateur, la boucle de jeu et l'affichage graphique.
+ * Ce contrôleur permet de :
+ * - Gérer les entrées clavier des joueurs
+ * - Mettre à jour l'état du jeu en temps réel
+ * - Afficher les éléments graphiques sur le canvas
+ * - Gérer les différents états de jeu (normal, death match)
+ */
 public class GameController implements Initializable {
 
     @FXML
@@ -66,6 +75,13 @@ public class GameController implements Initializable {
     // Images des joueurs pour l'interface
     private Image p1Image, p2Image, p3Image, p4Image;
 
+    /**
+     * Initialise le contrôleur avec les paramètres par défaut.
+     * Configure le canvas, initialise l'état du jeu et charge les ressources graphiques.
+     *
+     * @param location L'URL de localisation du fichier FXML
+     * @param resources Les ressources pour la localisation
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         gc = gameCanvas.getGraphicsContext2D();
@@ -85,6 +101,10 @@ public class GameController implements Initializable {
         gameCanvas.setFocusTraversable(true);
     }
 
+    /**
+     * Charge les images des joueurs pour l'interface graphique.
+     * Ces images sont utilisées pour afficher les avatars des joueurs dans l'interface en haut.
+     */
     private void loadPlayerInterfaceImages() {
         try {
             String basePath = "/fr/amu/iut/saesuper_bomberman/assets/bomberman/";
@@ -115,6 +135,12 @@ public class GameController implements Initializable {
         }
     }
 
+    /**
+     * Recharge les images des joueurs lors d'un changement de thème.
+     * Permet de mettre à jour l'apparence des joueurs sans redémarrer le jeu.
+     *
+     * @param themePath Le chemin d'accès au nouveau thème
+     */
     private void reloadPlayerInterfaceImages(String themePath) {
         try {
             // Charger les images P1, P2, P3, P4 avec le nouveau thème
@@ -142,11 +168,21 @@ public class GameController implements Initializable {
         }
     }
 
+    /**
+     * Définit la scène JavaFX pour gérer les événements clavier.
+     * Cette méthode doit être appelée après l'initialisation du contrôleur.
+     *
+     * @param scene La scène JavaFX à laquelle attacher les gestionnaires d'événements
+     */
     public void setScene(Scene scene) {
         this.scene = scene;
         setupKeyHandlers();
     }
 
+    /**
+     * Configure les gestionnaires d'événements clavier pour tous les joueurs.
+     * Permet de capturer les touches pressées et relâchées.
+     */
     private void setupKeyHandlers() {
         scene.setOnKeyPressed(e -> {
             pressedKeys.add(e.getCode());
@@ -156,12 +192,20 @@ public class GameController implements Initializable {
         scene.setOnKeyReleased(e -> pressedKeys.remove(e.getCode()));
     }
 
+    /**
+     * Démarre une nouvelle partie.
+     * Initialise l'état du jeu et lance la boucle principale.
+     */
     public void startGame() {
         gameCanvas.requestFocus();
         gameEndedByTime = false;
         startGameLoop();
     }
 
+    /**
+     * Démarre la boucle de jeu qui gère les mises à jour et le rendu.
+     * Utilise AnimationTimer pour synchroniser les mises à jour avec le rafraîchissement de l'écran.
+     */
     private void startGameLoop() {
         gameLoop = new AnimationTimer() {
             private long lastUpdate = 0;
@@ -179,6 +223,12 @@ public class GameController implements Initializable {
         gameLoop.start();
     }
 
+    /**
+     * Met à jour l'état du jeu en fonction des entrées utilisateur.
+     * Gère les déplacements, les bombes, les collisions et les changements de thème.
+     *
+     * @param currentTime Le temps actuel en nanosecondes
+     */
     private void update(long currentTime) {
         if (gameState.isTimeUp() && !gameEndedByTime) {
             // Au lieu de terminer la partie, activer le Death Match
@@ -245,6 +295,14 @@ public class GameController implements Initializable {
         checkGameState();
     }
 
+    /**
+     * Gère les mouvements d'un joueur en fonction des touches pressées.
+     * Applique les déplacements et la pose de bombes selon les contrôles du joueur.
+     *
+     * @param player Le joueur à déplacer
+     * @param currentTime Le temps actuel en nanosecondes
+     * @param playerIndex L'index du joueur (0-3)
+     */
     private void updatePlayerMovement(Player player, long currentTime, int playerIndex) {
         boolean canMove = currentTime - lastMovementTime[playerIndex] >= MOVEMENT_DELAY;
 
@@ -337,10 +395,18 @@ public class GameController implements Initializable {
         }
     }
 
+    /**
+     * Dessine l'état actuel du jeu sur le canvas.
+     * Délègue le rendu à l'objet GameState.
+     */
     private void render() {
         gameState.render(gc, TILE_SIZE);
     }
 
+    /**
+     * Met à jour les éléments de l'interface utilisateur (scores, statut, timer).
+     * Actualise l'affichage en fonction de l'état des joueurs.
+     */
     private void updateUI() {
         // Mettre à jour le timer
         timerLabel.setText(gameState.getFormattedTimeRemaining());
@@ -373,7 +439,12 @@ public class GameController implements Initializable {
         }
     }
 
-
+    /**
+     * Récupère le label d'affichage des éliminations pour un joueur donné.
+     *
+     * @param playerIndex L'index du joueur (0-3)
+     * @return Le label correspondant au joueur ou null si l'index est invalide
+     */
     private Label getPlayerKillLabel(int playerIndex) {
         switch (playerIndex) {
             case 0:
@@ -389,6 +460,12 @@ public class GameController implements Initializable {
         }
     }
 
+    /**
+     * Récupère l'ImageView correspondant à un joueur donné.
+     *
+     * @param playerIndex L'index du joueur (0-3)
+     * @return L'ImageView correspondant au joueur ou null si l'index est invalide
+     */
     private ImageView getPlayerImageView(int playerIndex) {
         switch (playerIndex) {
             case 0:
@@ -404,6 +481,10 @@ public class GameController implements Initializable {
         }
     }
 
+    /**
+     * Vérifie l'état de la partie pour déterminer si elle est terminée.
+     * Gère les conditions de victoire, d'égalité et l'affichage des résultats.
+     */
     private void checkGameState() {
         long alivePlayers = gameState.getPlayers().stream().mapToLong(p -> p.isAlive() ? 1 : 0).sum();
 
@@ -471,6 +552,12 @@ public class GameController implements Initializable {
         }
     }
 
+    /**
+     * Trouve les derniers joueurs éliminés en cas de mort simultanée.
+     * Permet de déterminer un vainqueur en cas d'égalité.
+     *
+     * @return La liste des derniers joueurs éliminés
+     */
     private List<Player> findLastDeadPlayers() {
         // Ignorer les joueurs qui sont toujours en vie
         List<Player> deadPlayers = gameState.getPlayers().stream()
@@ -493,6 +580,12 @@ public class GameController implements Initializable {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Récupère le label d'affichage du nom pour un joueur donné.
+     *
+     * @param playerIndex L'index du joueur (0-3)
+     * @return Le label correspondant au joueur ou null si l'index est invalide
+     */
     private Label getPlayerNameLabel(int playerIndex) {
         switch (playerIndex) {
             case 0:
@@ -506,49 +599,5 @@ public class GameController implements Initializable {
             default:
                 return null;
         }
-    }
-
-
-    @FXML
-    private void restartGame() {
-        if (gameLoop != null) {
-            gameLoop.stop();
-        }
-        gameState = new GameState();
-        gameEndedByTime = false;
-        for (int i = 0; i < 4; i++) {
-            lastMovementTime[i] = 0;
-        }
-
-        // Recharger les images avec le thème actuel
-        String currentTheme = GameState.DEFAULT_THEME;
-        switch (currentThemeIndex) {
-            case 0: currentTheme = GameState.DEFAULT_THEME; break;
-            case 1: currentTheme = GameState.SPECIAL_THEME; break;
-            case 2: currentTheme = GameState.SPECIAL_THEME2; break;
-        }
-        reloadPlayerInterfaceImages(currentTheme);
-
-        // Remettre les images en opacité normale et réinitialiser les scores
-        player1Image.setOpacity(1.0);
-        player2Image.setOpacity(1.0);
-        player3Image.setOpacity(1.0);
-        player4Image.setOpacity(1.0);
-
-        // Réinitialiser les scores avec le bon style
-        String initialStyle = "-fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 28px; -fx-font-family: 'Courier New'; -fx-min-width: 40; -fx-min-height: 40; -fx-alignment: center;";
-
-        player1Kills.setText("00");
-        player1Kills.setStyle(initialStyle);
-        player2Kills.setText("00");
-        player2Kills.setStyle(initialStyle);
-        player3Kills.setText("00");
-        player3Kills.setStyle(initialStyle);
-        player4Kills.setText("00");
-        player4Kills.setStyle(initialStyle);
-
-        gameStatus.setText("READY PLAYER ONE");
-
-        startGame();
     }
 }
