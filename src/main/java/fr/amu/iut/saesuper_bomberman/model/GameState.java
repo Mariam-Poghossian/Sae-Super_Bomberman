@@ -5,6 +5,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
 import java.util.*;
 
+/**
+ * Représente l'état complet du jeu à un moment donné.
+ * Cette classe centralise toutes les données du jeu :
+ * - La grille de jeu avec les différents types de cases
+ * - Les joueurs et leurs états
+ * - Les bombes, explosions et power-ups
+ * - La logique du mode Death Match
+ * - La gestion des thèmes graphiques
+ */
 public class GameState {
     private static final int GRID_WIDTH = 17;
     private static final int GRID_HEIGHT = 13;
@@ -42,6 +51,10 @@ public class GameState {
     private Image explosionExpanderImage;
     private Image maximumExplosionImage;
 
+    /**
+     * Crée un nouvel état de jeu avec tous les éléments initialisés.
+     * Génère la grille de jeu, place les joueurs et initialise le chronomètre.
+     */
     public GameState() {
         loadImages();
         initializeGrid();
@@ -53,6 +66,10 @@ public class GameState {
         gameStartTime = System.currentTimeMillis();
     }
 
+    /**
+     * Charge les images utilisées pour le rendu graphique du jeu.
+     * Ces images dépendent du thème actif.
+     */
     private void loadImages() {
         try {
             String basePath = currentTheme;
@@ -83,6 +100,10 @@ public class GameState {
         }
     }
 
+    /**
+     * Initialise la grille de jeu avec des murs et des espaces vides.
+     * Génère un labyrinthe aléatoire mais équilibré pour le gameplay.
+     */
     private void initializeGrid() {
         grid = new TileType[GRID_WIDTH][GRID_HEIGHT];
 
@@ -132,6 +153,12 @@ public class GameState {
         ensureMinimalPaths();
     }
 
+    /**
+     * Ajoute des murs destructibles supplémentaires de manière stratégique.
+     * Augmente la complexité du labyrinthe tout en maintenant un équilibre.
+     *
+     * @param random Le générateur de nombres aléatoires à utiliser
+     */
     private void addMassiveStrategicWalls(Random random) {
         // Ajouter beaucoup plus de murs destructibles de manière stratégique
         int additionalWalls = 20; // Augmenté de 8 à 20 murs supplémentaires
@@ -152,12 +179,24 @@ public class GameState {
         }
     }
 
+    /**
+     * Change le thème graphique du jeu.
+     * Recharge toutes les images avec le nouveau thème.
+     *
+     * @param themePath Le chemin d'accès au nouveau thème
+     */
     public void changeTheme(String themePath) {
         this.currentTheme = themePath;
         loadImages(); // Recharger les images avec le nouveau thème
         System.out.println("Thème changé: " + themePath);
     }
 
+    /**
+     * Remplit les espaces restants de la grille avec des murs destructibles.
+     * Assure une densité appropriée d'obstacles.
+     *
+     * @param random Le générateur de nombres aléatoires à utiliser
+     */
     private void fillRemainingSpaces(Random random) {
         // Remplir agressivement les espaces restants
         for (int x = 1; x < GRID_WIDTH - 1; x++) {
@@ -174,6 +213,10 @@ public class GameState {
         }
     }
 
+    /**
+     * S'assure qu'il existe des chemins minimaux dans le labyrinthe.
+     * Garantit que chaque joueur peut se déplacer dès le début.
+     */
     private void ensureMinimalPaths() {
         // S'assurer qu'il y a au moins un chemin libre immédiat depuis chaque spawn
         int[][] startPositions = {
@@ -215,6 +258,13 @@ public class GameState {
         }
     }
 
+    /**
+     * Vérifie si placer un mur à une position donnée bloquerait complètement le passage.
+     *
+     * @param x La coordonnée X à vérifier
+     * @param y La coordonnée Y à vérifier
+     * @return true si un mur bloquerait complètement le passage, false sinon
+     */
     private boolean wouldCompletelyBlock(int x, int y) {
         // Version plus permissive que wouldBlockPassage
         int adjacentSolids = 0;
@@ -234,6 +284,14 @@ public class GameState {
         return adjacentSolids >= 4;
     }
 
+    /**
+     * Vérifie si une position est proche d'un point de départ de joueur.
+     * Évite de placer des obstacles près des zones de spawn.
+     *
+     * @param x La coordonnée X à vérifier
+     * @param y La coordonnée Y à vérifier
+     * @return true si la position est proche d'un point de départ, false sinon
+     */
     private boolean isNearStartPosition(int x, int y) {
         // Zone de protection réduite autour des spawns (seulement la case immédiate)
         int[][] startPositions = {
@@ -254,6 +312,10 @@ public class GameState {
         return false;
     }
 
+    /**
+     * Initialise les joueurs et leurs positions de départ.
+     * Place les joueurs aux quatre coins de la carte.
+     */
     private void initializePlayers() {
         players = new ArrayList<>();
         Color[] colors = {Color.BLUE, Color.RED, Color.GREEN, Color.PURPLE};
@@ -267,6 +329,10 @@ public class GameState {
         }
     }
 
+    /**
+     * Met à jour l'état de toutes les bombes, gère les explosions et leurs effets.
+     * Traite les explosions en chaîne et les interactions avec l'environnement.
+     */
     public void updateBombs() {
         // Utiliser une liste temporaire pour éviter les modifications concurrentes
         List<Bomb> bombsToExplode = new ArrayList<>();
@@ -299,6 +365,12 @@ public class GameState {
         }
     }
 
+    /**
+     * Fait exploser une bombe et gère les effets de l'explosion.
+     * Crée les explosions, détruit les murs et déclenche les explosions en chaîne.
+     *
+     * @param bomb La bombe qui explose
+     */
     private void explodeBomb(Bomb bomb) {
         // Liste des bombes à faire exploser en chaîne
         Queue<Bomb> chainExplosions = new LinkedList<>();
@@ -369,6 +441,12 @@ public class GameState {
         }
     }
 
+    /**
+     * Détruit un power-up aux coordonnées spécifiées.
+     *
+     * @param x La coordonnée X du power-up
+     * @param y La coordonnée Y du power-up
+     */
     private void destroyPowerUpAt(int x, int y) {
         Iterator<PowerUp> iterator = powerUps.iterator();
         while (iterator.hasNext()) {
@@ -380,6 +458,13 @@ public class GameState {
         }
     }
 
+    /**
+     * Génère aléatoirement un power-up aux coordonnées spécifiées.
+     * Les power-ups apparaissent lorsqu'un mur destructible est détruit.
+     *
+     * @param x La coordonnée X où générer le power-up
+     * @param y La coordonnée Y où générer le power-up
+     */
     private void generatePowerUp(int x, int y) {
         Random random = new Random();
 
@@ -401,6 +486,10 @@ public class GameState {
         }
     }
 
+    /**
+     * Vérifie les collisions entre les joueurs et les power-ups.
+     * Applique les effets des power-ups collectés.
+     */
     public void checkPowerUpCollisions() {
         Iterator<PowerUp> iterator = powerUps.iterator();
         while (iterator.hasNext()) {
@@ -416,6 +505,12 @@ public class GameState {
         }
     }
 
+    /**
+     * Applique l'effet d'un power-up à un joueur.
+     *
+     * @param player Le joueur qui collecte le power-up
+     * @param powerUp Le power-up à appliquer
+     */
     private void applyPowerUp(Player player, PowerUp powerUp) {
         switch (powerUp.getType()) {
             case EXTRA_BOMB:
@@ -435,6 +530,15 @@ public class GameState {
         }
     }
 
+    /**
+     * Recherche et ajoute les bombes à faire exploser en chaîne.
+     *
+     * @param x La coordonnée X de l'explosion
+     * @param y La coordonnée Y de l'explosion
+     * @param originalOwner Le propriétaire de la bombe originale
+     * @param chainExplosions La file d'attente des bombes à faire exploser
+     * @param explodedPositions L'ensemble des positions déjà explosées
+     */
     private void findAndQueueChainBombs(int x, int y, Player originalOwner,
                                         Queue<Bomb> chainExplosions, Set<String> explodedPositions) {
         String posKey = x + "," + y;
@@ -461,11 +565,20 @@ public class GameState {
         }
     }
 
+    /**
+     * Nettoie les collisions d'explosion enregistrées pour une explosion terminée.
+     *
+     * @param explosion L'explosion terminée
+     */
     private void cleanupExplosionHits(Explosion explosion) {
         String explosionKey = explosion.getX() + "," + explosion.getY();
         playerExplosionHits.removeIf(hit -> hit.startsWith(explosionKey));
     }
 
+    /**
+     * Vérifie les collisions entre les joueurs et les explosions.
+     * Gère les dégâts et les éliminations.
+     */
     public void checkExplosionCollisions() {
         for (Explosion explosion : explosions) {
             for (Player player : players) {
@@ -489,27 +602,30 @@ public class GameState {
         }
     }
 
+    /**
+     * Renvoie le temps restant avant la fin de la partie normale.
+     *
+     * @return Le temps restant en millisecondes
+     */
     public long getTimeRemaining() {
         if (gameEnded) return 0;
         long elapsed = System.currentTimeMillis() - gameStartTime;
         return Math.max(0, GAME_DURATION - elapsed);
     }
 
+    /**
+     * Vérifie si le temps réglementaire est écoulé.
+     *
+     * @return true si le temps est écoulé, false sinon
+     */
     public boolean isTimeUp() {
         return !gameEnded && getTimeRemaining() <= 0;
     }
 
-    public void endGame() {
-        gameEnded = true;
-    }
-
-    public Player getWinnerByScore() {
-        return players.stream()
-                .filter(Player::isAlive)
-                .max(Comparator.comparingInt(Player::getKillCount))
-                .orElse(null);
-    }
-
+    /**
+     * Active le mode Death Match qui réduit progressivement la taille de l'arène.
+     * Ce mode s'active automatiquement à la fin du temps réglementaire.
+     */
     public void startDeathMatch() {
         if (!deathMatchActive) {
             deathMatchActive = true;
@@ -519,10 +635,19 @@ public class GameState {
         }
     }
 
+    /**
+     * Vérifie si le mode Death Match est actif.
+     *
+     * @return true si le Death Match est actif, false sinon
+     */
     public boolean isDeathMatchActive() {
         return deathMatchActive;
     }
 
+    /**
+     * Met à jour l'état du Death Match, réduisant l'arène à intervalles réguliers.
+     * Transforme progressivement les bordures en murs indestructibles.
+     */
     public void updateDeathMatch() {
         if (!deathMatchActive) return;
 
@@ -533,6 +658,10 @@ public class GameState {
         }
     }
 
+    /**
+     * Fait avancer le niveau de contraction de l'arène en mode Death Match.
+     * Ajoute une nouvelle couche de murs indestructibles vers le centre.
+     */
     private void advanceDeathMatchRing() {
         if (deathMatchRing >= DEATH_MATCH_MAX_RINGS) {
             return; // Arrêter quand on atteint le centre
@@ -563,6 +692,13 @@ public class GameState {
         System.out.println("DEATH MATCH: L'arène se réduit! Niveau " + deathMatchRing);
     }
 
+    /**
+     * Vérifie et transforme une case en mur indestructible pour le Death Match.
+     * Élimine les joueurs qui se trouvent sur cette case.
+     *
+     * @param x La coordonnée X de la case
+     * @param y La coordonnée Y de la case
+     */
     private void checkAndTransformToWall(int x, int y) {
         // Vérifier si un joueur est sur cette case
         for (Player player : players) {
@@ -579,6 +715,11 @@ public class GameState {
         grid[x][y] = TileType.WALL_INDESTRUCTIBLE;
     }
 
+    /**
+     * Renvoie le temps restant au format MM:SS.
+     *
+     * @return Le temps formaté sous forme de chaîne
+     */
     public String getFormattedTimeRemaining() {
         long timeLeft = getTimeRemaining();
         long minutes = timeLeft / 60000;
@@ -586,6 +727,13 @@ public class GameState {
         return String.format("%d:%02d", minutes, seconds);
     }
 
+    /**
+     * Dessine l'état actuel du jeu sur le contexte graphique spécifié.
+     * Affiche la grille, les joueurs, les bombes, les explosions et les power-ups.
+     *
+     * @param gc Le contexte graphique sur lequel dessiner
+     * @param tileSize La taille d'une case en pixels
+     */
     public void render(GraphicsContext gc, int tileSize) {
         // Effacer l'écran avec une couleur de fond
         gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
@@ -763,6 +911,12 @@ public class GameState {
         }
     }
 
+    /**
+     * Récupère l'image correspondant à un joueur donné.
+     *
+     * @param playerId L'identifiant du joueur (1-4)
+     * @return L'image du joueur ou null si l'identifiant est invalide
+     */
     private Image getPlayerImage(int playerId) {
         switch (playerId) {
             case 1: return player1Image;
@@ -773,6 +927,13 @@ public class GameState {
         }
     }
 
+    /**
+     * Vérifie s'il y a une bombe aux coordonnées spécifiées.
+     *
+     * @param x La coordonnée X à vérifier
+     * @param y La coordonnée Y à vérifier
+     * @return true s'il y a une bombe à cette position, false sinon
+     */
     public boolean hasBombAt(int x, int y) {
         for (Bomb bomb : bombs) {
             if (bomb.getX() == x && bomb.getY() == y) {
@@ -782,6 +943,13 @@ public class GameState {
         return false;
     }
 
+    /**
+     * Renvoie le type de tuile aux coordonnées spécifiées.
+     *
+     * @param x La coordonnée X à vérifier
+     * @param y La coordonnée Y à vérifier
+     * @return Le type de tuile à cette position
+     */
     public TileType getTile(int x, int y) {
         if (x < 0 || x >= GRID_WIDTH || y < 0 || y >= GRID_HEIGHT) {
             return TileType.WALL_INDESTRUCTIBLE;
@@ -789,10 +957,34 @@ public class GameState {
         return grid[x][y];
     }
 
+    /**
+     * Renvoie la liste des joueurs.
+     *
+     * @return La liste des joueurs
+     */
     public List<Player> getPlayers() { return players; }
+
+    /**
+     * Renvoie la liste des bombes actives.
+     *
+     * @return La liste des bombes
+     */
     public List<Bomb> getBombs() { return bombs; }
+
+    /**
+     * Ajoute une bombe à la liste des bombes actives.
+     *
+     * @param bomb La bombe à ajouter
+     */
     public void addBomb(Bomb bomb) { bombs.add(bomb); }
 
+    /**
+     * Vérifie si un joueur peut se déplacer aux coordonnées spécifiées.
+     *
+     * @param x La coordonnée X à vérifier
+     * @param y La coordonnée Y à vérifier
+     * @return true si le déplacement est possible, false sinon
+     */
     public boolean canMoveTo(int x, int y) {
         if (getTile(x, y) != TileType.GRASS) {
             return false;
