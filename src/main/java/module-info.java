@@ -3,6 +3,7 @@ module fr.amu.iut.saesuper_bomberman {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.media;
+    requires java.desktop;
 
     opens fr.amu.iut.saesuper_bomberman to javafx.fxml;
     opens fr.amu.iut.saesuper_bomberman.controllerfxml to javafx.fxml;

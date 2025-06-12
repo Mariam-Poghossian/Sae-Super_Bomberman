@@ -12,6 +12,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
+
+import java.awt.*;
 
 /**
  * Contrôleur du menu overlay situé en bas de l'interface de jeu.
@@ -85,16 +88,39 @@ public class BottomOverlayMenuController {
 
     @FXML
     public void initialize() {
-        bottomMenu.setVisible(false);
+        bottomMenu.setVisible(false); // menu masqué par défaut
 
         Platform.runLater(() -> {
             Scene scene = bottomMenu.getScene();
-            if (scene != null) {
-                scene.setOnMouseEntered(e -> bottomMenu.setVisible(true));
-                scene.setOnMouseExited(e -> bottomMenu.setVisible(false));
-            } else {
-                System.err.println("❌ Scene is null: le composant n'est pas bien attaché !");
-            }
+            Stage stage = (Stage) scene.getWindow();
+
+            // 1. Afficher le menu dès que la souris bouge dans la fenêtre
+            scene.setOnMouseMoved(e -> bottomMenu.setVisible(true));
+
+            // 2. Vérifie toutes les 500ms si la souris est EN DEHORS de la fenêtre
+            javafx.animation.Timeline hideIfOutside = new javafx.animation.Timeline(
+                    new javafx.animation.KeyFrame(Duration.millis(100), evt -> {
+                        // Coordonnées de la souris sur l'écran
+                        double mouseX = MouseInfo.getPointerInfo().getLocation().getX();
+                        double mouseY = MouseInfo.getPointerInfo().getLocation().getY();
+
+                        // Coordonnées de la fenêtre
+                        double stageX = stage.getX();
+                        double stageY = stage.getY();
+                        double stageWidth = stage.getWidth();
+                        double stageHeight = stage.getHeight();
+
+                        boolean isOutside =
+                                mouseX < stageX || mouseX > stageX + stageWidth ||
+                                        mouseY < stageY || mouseY > stageY + stageHeight;
+
+                        if (isOutside) {
+                            bottomMenu.setVisible(false); // cacher le menu si la souris quitte la fenêtre
+                        }
+                    })
+            );
+            hideIfOutside.setCycleCount(javafx.animation.Animation.INDEFINITE);
+            hideIfOutside.play();
         });
 
         muteButton.setOnAction(e -> {
