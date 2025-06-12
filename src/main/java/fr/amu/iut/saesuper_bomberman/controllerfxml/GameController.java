@@ -75,6 +75,8 @@ public class GameController implements Initializable {
     // Images des joueurs pour l'interface
     private Image p1Image, p2Image, p3Image, p4Image;
 
+    private List<String> playerNames;
+
     /**
      * Initialise le contrôleur avec les paramètres par défaut.
      * Configure le canvas, initialise l'état du jeu et charge les ressources graphiques.
@@ -586,7 +588,9 @@ public class GameController implements Initializable {
      * @param playerIndex L'index du joueur (0-3)
      * @return Le label correspondant au joueur ou null si l'index est invalide
      */
-    private Label getPlayerNameLabel(int playerIndex) {
+
+
+    public Label getPlayerNameLabel(int playerIndex) {
         switch (playerIndex) {
             case 0:
                 return player1Name;
@@ -600,4 +604,19 @@ public class GameController implements Initializable {
                 return null;
         }
     }
+
+
+    public void setPlayerNames(List<String> names) {
+        this.playerNames = names;
+
+        // Mettre à jour les labels des joueurs avec les noms personnalisés
+        for(int i = 0; i < Math.min(names.size(), 4); i++) {
+            Label nameLabel = getPlayerNameLabel(i);
+            if(nameLabel != null) {
+                nameLabel.setText(names.get(i));
+            }
+        }
+    }
+
+
 }

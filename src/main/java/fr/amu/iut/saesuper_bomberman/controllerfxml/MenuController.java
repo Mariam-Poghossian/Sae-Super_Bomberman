@@ -29,6 +29,8 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 /**
  * Contrôleur du menu principal de Super Bomberman.
@@ -65,6 +67,11 @@ public class MenuController implements Initializable {
 
     private boolean logoAnimationDone = false;
     private Scene originalScene;
+
+    private List<TextField> playerFields = new ArrayList<>();
+
+
+
     /**
      * Initialise tous les éléments graphiques et animations du menu.
      */
@@ -304,6 +311,7 @@ public class MenuController implements Initializable {
                     playerStack.getChildren().addAll(playerSquare, playerIcon);
 
                     TextField playerField = new TextField();
+                    playerFields.add(playerField);
                     playerField.setPromptText("Joueur " + i);
                     playerField.setPrefWidth(300);
                     playerField.setPrefHeight(70);
@@ -453,6 +461,8 @@ public class MenuController implements Initializable {
                                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fr/amu/iut/saesuper_bomberman/controllerfxml/game.fxml"));
                                 Parent gameRoot = loader.load();
                                 GameController controller = loader.getController();
+                                List<String> playerNames = getPlayerNames();
+                                controller.setPlayerNames(playerNames);
                                 Scene gameScene = new Scene(gameRoot);
                                 controller.setScene(gameScene);
                                 Stage stagePlay = (Stage) jouer.getScene().getWindow();
@@ -486,6 +496,7 @@ public class MenuController implements Initializable {
                         dfTheme.play();
 
                         Scene themeScene = new Scene(themeRoot, loginScene.getWidth(), loginScene.getHeight());
+
                         stage.setScene(themeScene);
 
                     } catch (Exception ex) {
@@ -727,6 +738,18 @@ public class MenuController implements Initializable {
         });
         logoPause.play();
     }
+
+    public List<String> getPlayerNames() {
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < playerFields.size(); i++) {
+            String name = playerFields.get(i).getText().trim();
+            names.add(name.isEmpty() ? "Joueur " + (i + 1) : name);
+        }
+        return names;
+    }
+
+
+
     /**
      * Modifie le volume de la musique.
      * @param volume Valeur entre 0 et 100.
