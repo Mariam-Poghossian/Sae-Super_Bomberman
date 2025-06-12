@@ -161,7 +161,7 @@ public class GameState {
      */
     private void addMassiveStrategicWalls(Random random) {
         // Ajouter beaucoup plus de murs destructibles de manière stratégique
-        int additionalWalls = 20; // Augmenté de 8 à 20 murs supplémentaires
+        int additionalWalls = 20;
         int attempts = 0;
         int placed = 0;
 
