@@ -1,6 +1,7 @@
 package fr.amu.iut.saesuper_bomberman.components;
 
 import fr.amu.iut.saesuper_bomberman.controllerfxml.MenuController;
+import fr.amu.iut.saesuper_bomberman.model.GameState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,10 +38,13 @@ public class BottomOverlayMenuController {
     @FXML
     private Button restartButton;
 
+    @FXML
+    private Button gameModeButton;
+
+
     private double previousVolume = 50;
     private boolean isFullscreen = false;
     private boolean isPaused = false;
-
     /**
      * Ouvre la fenêtre des paramètres de contrôle avec un fond semi-transparent.
      */

@@ -18,6 +18,25 @@ public class Player {
     private static final int MAXIMUM_EXPLOSION_RANGE = 10;
     private int killCount;
     private long deathTime = 0; // Temps de la mort du joueur
+    private int team; // Temps de la mort du joueur
+
+    // Ajouter ces deux méthodes à la classe Player
+    public void setTeam(int team) {
+        this.team = team;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
+    // Ajouter aussi un getter pour l'équipe
+    public int getTeam() {
+        return team;
+    }
+
+    public javafx.geometry.Bounds getBoundsInParent() {
+        return new javafx.geometry.BoundingBox(x, y, 32, 32);
+    }
 
     public Player(int id, int x, int y, Color color) {
         this.id = id;

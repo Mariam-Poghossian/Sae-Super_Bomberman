@@ -54,7 +54,13 @@
                     prefWidth="100"
                     style="-fx-control-inner-background: #FFA500;" />
 
-
+            <Button fx:id="gameModeButton" text="Mode: Classic" onAction="#toggleGameMode">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@../assets/icons/gamemode.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
 
             <Button fx:id="fullscreenButton" styleClass="menu-button" prefWidth="50" prefHeight="50">
                 <graphic><ImageView fitHeight="40" fitWidth="50"><image><Image url="@../assets/icons/FullScreen.png"/></image></ImageView></graphic>

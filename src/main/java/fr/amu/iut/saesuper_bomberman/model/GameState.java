@@ -1,5 +1,6 @@
 package fr.amu.iut.saesuper_bomberman.model;
 
+import fr.amu.iut.saesuper_bomberman.components.GameMode;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
@@ -41,7 +42,33 @@ public class GameState {
     private Image extraBombImage;
     private Image explosionExpanderImage;
     private Image maximumExplosionImage;
+    private GameMode gameMode;
 
+    // Ajoutez ces méthodes dans GameState
+    public void setGameMode(GameMode mode) {
+        this.gameMode = mode;
+    }
+
+    public GameMode getGameMode() {
+        return gameMode;
+    }
+
+    public void update() {
+        if (gameMode != null) {
+            gameMode.update();
+        }
+        // Autres mises à jour du jeu
+        updateBombs();
+        checkExplosionCollisions();
+        checkPowerUpCollisions();
+
+        if (isTimeUp() && !isDeathMatchActive()) {
+            startDeathMatch();
+        }
+        if (isDeathMatchActive()) {
+            updateDeathMatch();
+        }
+    }
     public GameState() {
         loadImages();
         initializeGrid();
