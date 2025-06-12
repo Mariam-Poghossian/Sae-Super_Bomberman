@@ -209,8 +209,8 @@ public class MenuController implements Initializable {
      */
 
     private void initializeMainMenuButtons() {
-        Button btnSeConnecter = new Button("SE CONNECTER");
-        Button btnInvite = new Button("JOUER EN TANT QU'INVITE");
+        Button btnSeConnecter = new Button("JEU NORMAL");
+        Button btnInvite = new Button("CAPTURE THE FLAG");
         btnSeConnecter.getStyleClass().add("menu-button");
         btnInvite.getStyleClass().add("menu-button");
 
@@ -235,7 +235,7 @@ public class MenuController implements Initializable {
 
 
 
-        btnSeConnecter.setOnAction(e -> {
+        btnSeConnecter.setOnAction(event1 -> {
             try {
                 originalScene = btnSeConnecter.getScene();
                 AnchorPane loginRoot = new AnchorPane();
@@ -288,7 +288,7 @@ public class MenuController implements Initializable {
                 playersBox.setLayoutY(150);
 
                 for (int i = 1; i <= 4; i++) {
-                    javafx.scene.layout.HBox playerRow = new javafx.scene.layout.HBox(10);
+                    HBox playerRow = new HBox(10);
                     StackPane playerStack = new StackPane();
                     Rectangle playerSquare = new Rectangle();
                     playerSquare.setWidth(70);
@@ -314,11 +314,11 @@ public class MenuController implements Initializable {
                 }
                 loginRoot.getChildren().add(playersBox);
 
-                Button startButton = new Button("START");
-                startButton.setStyle("-fx-background-color: #22ca22;-fx-text-fill: white;-fx-font-family: 'Press Start 2P';-fx-font-size: 20px;-fx-min-width: 100px;-fx-min-height: 40px;");
-                AnchorPane.setBottomAnchor(startButton, 100.0);
-                AnchorPane.setRightAnchor(startButton, 50.0);
-                loginRoot.getChildren().add(startButton);
+                Button suivantButton = new Button("SUIVANT");
+                suivantButton.setStyle("-fx-background-color: #22ca22;-fx-text-fill: white;-fx-font-family: 'Press Start 2P';-fx-font-size: 20px;-fx-min-width: 100px;-fx-min-height: 40px;");
+                AnchorPane.setBottomAnchor(suivantButton, 100.0);
+                AnchorPane.setRightAnchor(suivantButton, 50.0);
+                loginRoot.getChildren().add(suivantButton);
 
                 TranslateTransition mtLogin = new TranslateTransition(Duration.seconds(35), loginMontgolfiere);
                 mtLogin.setFromX(0); mtLogin.setToX(1200);
@@ -343,6 +343,157 @@ public class MenuController implements Initializable {
                         originalScene.getHeight());
                 Stage stage = (Stage) btnSeConnecter.getScene().getWindow();
                 stage.setScene(loginScene);
+
+                suivantButton.setOnAction(evt -> {
+                    try {
+                        AnchorPane themeRoot = new AnchorPane();
+
+                        // Fond
+                        ImageView bg = new ImageView(new Image(getClass().getResource(
+                                "/fr/amu/iut/saesuper_bomberman/assets/images/background.png").toExternalForm()));
+                        bg.fitWidthProperty().bind(themeRoot.widthProperty());
+                        bg.fitHeightProperty().bind(themeRoot.heightProperty());
+                        themeRoot.getChildren().add(bg);
+
+                        // Objets volants
+                        ImageView m = new ImageView(new Image(getClass().getResource(
+                                "/fr/amu/iut/saesuper_bomberman/assets/images/montgolfiere.png").toExternalForm()));
+                        m.setFitWidth(200); m.setPreserveRatio(true); m.setLayoutX(-180); m.setLayoutY(50);
+
+                        ImageView d = new ImageView(new Image(getClass().getResource(
+                                "/fr/amu/iut/saesuper_bomberman/assets/images/dirigeable_h.png").toExternalForm()));
+                        d.setFitWidth(150); d.setPreserveRatio(true); d.setLayoutX(-250); d.setLayoutY(370);
+
+                        ImageView df = new ImageView(new Image(getClass().getResource(
+                                "/fr/amu/iut/saesuper_bomberman/assets/images/dirigeable_fire.png").toExternalForm()));
+                        df.setFitWidth(280); df.setPreserveRatio(true); df.setLayoutX(950); df.setLayoutY(260);
+
+                        themeRoot.getChildren().addAll(m, d, df);
+
+                        // Bouton retour
+                        Button back = new Button();
+                        ImageView arrow = new ImageView(new Image(getClass().getResource(
+                                "/fr/amu/iut/saesuper_bomberman/assets/images/retour.png").toExternalForm()));
+                        arrow.setFitWidth(40); arrow.setFitHeight(40);
+                        back.setGraphic(arrow);
+                        back.setStyle("-fx-background-color: transparent; -fx-padding: 10px;");
+                        AnchorPane.setTopAnchor(back, 20.0);
+                        AnchorPane.setLeftAnchor(back, 20.0);
+                        back.setOnAction(ev -> stage.setScene(loginScene));
+                        themeRoot.getChildren().add(back);
+
+                        // Sélection des thèmes
+                        HBox themes = new HBox(40);
+                        themes.setAlignment(Pos.CENTER);
+                        AnchorPane.setTopAnchor(themes, 150.0);
+                        AnchorPane.setLeftAnchor(themes, 50.0);
+                        AnchorPane.setRightAnchor(themes, 50.0);
+
+                        String[] themePaths = {
+                                "/fr/amu/iut/saesuper_bomberman/assets/images/theme_1.png",
+                                "/fr/amu/iut/saesuper_bomberman/assets/images/theme_2.png",
+                                "/fr/amu/iut/saesuper_bomberman/assets/images/theme_3.png"
+                        };
+
+                        int[] selectedTheme = {0};
+
+                        for (int i = 0; i < 3; i++) {
+                            VBox box = new VBox(10);
+                            box.setAlignment(Pos.CENTER);
+                            box.setStyle("-fx-padding: 10; -fx-border-width: 3; -fx-border-color: " + (i == 0 ? "#22ca22" : "transparent") + ";");
+
+                            final int themeNumber = i + 1;
+
+                            ImageView img = new ImageView(new Image(getClass().getResource(themePaths[i]).toExternalForm()));
+                            img.setFitWidth(200); img.setFitHeight(200);
+
+                            Label label = new Label("THÈME " + themeNumber);
+                            label.setStyle("-fx-font-family: 'Press Start 2P'; -fx-font-size: 20px; -fx-text-fill: white;");
+
+                            EventHandler<MouseEvent> selectHandler = event2 -> {
+                                themes.getChildren().forEach(node ->
+                                        ((VBox) node).setStyle("-fx-padding: 10; -fx-border-width: 3; -fx-border-color: transparent;"));
+                                box.setStyle("-fx-padding: 10; -fx-border-width: 3; -fx-border-color: #22ca22; -fx-background-color: rgba(34, 202, 34, 0.2);");
+                                selectedTheme[0] = themeNumber - 1;
+                            };
+
+                            img.setOnMouseClicked(selectHandler);
+                            label.setOnMouseClicked(selectHandler);
+
+                            box.setOnMouseEntered(ev -> {
+                                if (selectedTheme[0] != themeNumber - 1) {
+                                    box.setStyle("-fx-padding: 10; -fx-border-width: 3; -fx-border-color: #ffffff; -fx-background-color: rgba(255,255,255,0.1);");
+                                }
+                            });
+
+                            box.setOnMouseExited(ev -> {
+                                if (selectedTheme[0] != themeNumber - 1) {
+                                    box.setStyle("-fx-padding: 10; -fx-border-width: 3; -fx-border-color: transparent;");
+                                } else {
+                                    box.setStyle("-fx-padding: 10; -fx-border-width: 3; -fx-border-color: #22ca22; -fx-background-color: rgba(34, 202, 34, 0.2);");
+                                }
+                            });
+
+                            VBox.setMargin(label, new Insets(0, 0, 10, 0));
+                            box.getChildren().addAll(img, label);
+                            themes.getChildren().add(box);
+                        }
+
+                        themeRoot.getChildren().add(themes);
+
+                        // Bouton JOUER
+                        Button jouer = new Button("JOUER");
+                        jouer.setStyle("-fx-background-color: #22ca22; -fx-text-fill: white; -fx-font-family: 'Press Start 2P'; -fx-font-size: 20px; -fx-min-width: 100px; -fx-min-height: 40px;");
+                        AnchorPane.setBottomAnchor(jouer, 100.0);
+                        AnchorPane.setRightAnchor(jouer, 50.0);
+                        themeRoot.getChildren().add(jouer);
+
+                        jouer.setOnAction(ev -> {
+                            try {
+                                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fr/amu/iut/saesuper_bomberman/controllerfxml/game.fxml"));
+                                Parent gameRoot = loader.load();
+                                GameController controller = loader.getController();
+                                Scene gameScene = new Scene(gameRoot);
+                                controller.setScene(gameScene);
+                                Stage stagePlay = (Stage) jouer.getScene().getWindow();
+                                stagePlay.setScene(gameScene);
+                                controller.startGame();
+                            } catch (Exception err) {
+                                err.printStackTrace();
+                            }
+                        });
+
+                        // Transitions (au bon format)
+                        TranslateTransition mtTheme = new TranslateTransition(Duration.seconds(35), m);
+                        mtTheme.setFromX(0);
+                        mtTheme.setToX(1200);
+                        mtTheme.setCycleCount(Animation.INDEFINITE);
+                        mtTheme.setInterpolator(Interpolator.LINEAR);
+                        mtTheme.play();
+
+                        TranslateTransition dhTheme = new TranslateTransition(Duration.seconds(28), d);
+                        dhTheme.setFromX(0);
+                        dhTheme.setToX(1200);
+                        dhTheme.setCycleCount(Animation.INDEFINITE);
+                        dhTheme.setInterpolator(Interpolator.LINEAR);
+                        dhTheme.play();
+
+                        TranslateTransition dfTheme = new TranslateTransition(Duration.seconds(25), df);
+                        dfTheme.setFromX(0);
+                        dfTheme.setToX(-1200);
+                        dfTheme.setCycleCount(Animation.INDEFINITE);
+                        dfTheme.setInterpolator(Interpolator.LINEAR);
+                        dfTheme.play();
+
+                        Scene themeScene = new Scene(themeRoot, loginScene.getWidth(), loginScene.getHeight());
+                        stage.setScene(themeScene);
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -537,7 +688,7 @@ public class MenuController implements Initializable {
         VBox menuBox = new VBox(6, btnSeConnecter, btnInvite);
         menuBox.setOpacity(0);
         menuBox.setAlignment(Pos.CENTER);
-        menuBox.setLayoutX(97);
+        menuBox.setLayoutX(170);
         menuBox.setLayoutY(470);
         root.getChildren().add(menuBox);
 
